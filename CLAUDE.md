@@ -6,7 +6,7 @@ This file is read at the start of every session. It is the single source of trut
 
 ## Project Overview
 
-**Miss Charming** is a secure anonymous messaging system — two companion Android apps (Alice and Bob) with an air-gap architecture, QR-only transport, and a full cryptographic protocol built on X3DH and Double Ratchet. The target is 1 billion users. The complete design is in `docs/design.md`.
+**Miss Charming** is the most secure messaging Android application in existence. Two companion apps — Alice (air-gapped crypto vault) and Bob (online courier) — communicate exclusively via QR codes, with zero server involvement, zero plaintext on any networked device, and a full cryptographic protocol built on X3DH and Double Ratchet. The threat model assumes every layer of the stack is compromised. The target is 1 billion users. The complete design is in `docs/design.md`.
 
 **Before making any suggestion** — architectural, naming, protocol, or library — read `docs/design.md` first. Many decisions are already made and documented. Do not re-open closed decisions. Do not propose alternatives to things already decided.
 
