@@ -4,6 +4,14 @@ This file is read at the start of every session. It is the single source of trut
 
 ---
 
+## Project Overview
+
+**Miss Charming** is a secure anonymous messaging system — two companion Android apps (Alice and Bob) with an air-gap architecture, QR-only transport, and a full cryptographic protocol built on X3DH and Double Ratchet. The target is 1 billion users. The complete design is in `docs/design.md`.
+
+**Before making any suggestion** — architectural, naming, protocol, or library — read `docs/design.md` first. Many decisions are already made and documented. Do not re-open closed decisions. Do not propose alternatives to things already decided.
+
+---
+
 ## What This Project Is
 
 **Wonderland** is the codebase for **Alice & Bob** — a secure anonymous messaging system built as two companion Android applications. The design goal is 1 billion worldwide users. The full design document is at `docs/design.md`. Read it before making any architectural or protocol decisions.
@@ -81,16 +89,22 @@ These are locked decisions. Do not revisit, suggest alternatives, or silently re
 
 ---
 
-## Coding Style — Non-Negotiable
+## Code Standards — Non-Negotiable
 
 These rules override every Google guide, Now in Android reference, and linter default. They are not up for debate.
 
 - User's style wins. Always. Never suggest "the standard way is..." for anything already decided.
 - The rules above are locked. Do not re-open them.
+- **Kotlin 2.0+ syntax — fetch before writing.** Before writing any Kotlin code that uses features from Kotlin 2.0+, fetch the relevant page from `kotlinlang.org/docs` and verify the exact syntax. Do not guess. Do not rely on training data for newer language features. Fetch first, write second.
 
-## Kotlin 2.0+ Syntax — Mandatory Verification
+## Conventions — Undecided Naming
 
-Before writing any Kotlin code that uses features from Kotlin 2.0+, fetch the relevant page from `kotlinlang.org/docs` and verify the exact syntax before proceeding. Do not guess. Do not rely on training data for newer language features. Fetch first, write second.
+The naming rules above are locked for decisions already made. For any naming decision not yet covered:
+
+- Present options with explicit trade-offs. Do not make a single recommendation and present it as obvious.
+- Check `docs/design.md` first — the decision may already be made.
+- If the decision is not in the design doc, surface it as a genuine choice for the user to make.
+- Once the user decides, that decision is locked. Record it and follow it.
 
 ---
 
