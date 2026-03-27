@@ -88,6 +88,10 @@ These rules override every Google guide, Now in Android reference, and linter de
 - User's style wins. Always. Never suggest "the standard way is..." for anything already decided.
 - The rules above are locked. Do not re-open them.
 
+## Kotlin 2.0+ Syntax — Mandatory Verification
+
+Before writing any Kotlin code that uses features from Kotlin 2.0+, fetch the relevant page from `kotlinlang.org/docs` and verify the exact syntax before proceeding. Do not guess. Do not rely on training data for newer language features. Fetch first, write second.
+
 ---
 
 ## Technology Stack
