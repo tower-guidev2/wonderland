@@ -30,9 +30,6 @@ bouncyCastle            = "1.83"
 zstdJni                 = "1.5.7-7"
 zxing                   = "3.5.4"
 
-# QR / ML Kit
-sqlcipher               = "4.6.1"
-
 # Arrow
 arrowCore               = "2.2.2.1"
 
@@ -68,11 +65,10 @@ androidx-compose-ui-test-manifest   = { group = "androidx.compose.ui",    name =
 androidx-compose-ui-test-junit4     = { group = "androidx.compose.ui",    name = "ui-test-junit4" }
 androidx-compose-material3          = { group = "androidx.compose.material3", name = "material3" }
 
-# Room + SQLCipher
+# Room
 androidx-room-runtime               = { module = "androidx.room:room-runtime",   version.ref = "room" }
 androidx-room-ktx                   = { module = "androidx.room:room-ktx",        version.ref = "room" }
 androidx-room-compiler              = { module = "androidx.room:room-compiler",   version.ref = "room" }
-android-database-sqlcipher         = { module = "net.zetetic:android-database-sqlcipher", version.ref = "sqlcipher" }
 
 # Kotlin
 kotlinx-coroutines-android          = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }

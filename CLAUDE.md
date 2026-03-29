@@ -48,14 +48,16 @@ wonderland/
 │   └── testfixtures/   — shared test fakes, data builders, test utilities
 │
 ├── alice/              — D1 Vault app (minSdk 33)
-│   ├── core/           — pure Kotlin domain types (IAirGapSurveillance, AirGapViolation, AirGapStatus)
+│   ├── core:surveillance/ — pure Kotlin domain types (IAirGapSurveillance, AirGapViolation, AirGapStatus)
 │   ├── core:ui/        — Alice Compose theme (feminine, Rolls Royce quality)
 │   ├── app/
-│   ├── feature:messaging/
 │   ├── feature:contacts/
-│   ├── feature:pairing/
 │   ├── feature:keygen/
-│   └── feature:settings/
+│   ├── feature:messaging/
+│   ├── feature:pairing/
+│   ├── feature:scanner/
+│   ├── feature:settings/
+│   └── feature:delivery/  — tentative
 │
 └── bob/                — D2 Courier app (minSdk 26)
     ├── core:ui/        — Bob Compose theme (masculine, same font family as Alice)
@@ -144,14 +146,14 @@ The naming rules above are locked for decisions already made. For any naming dec
 - `com.google.zxing:core` — encode/decode (no Android dependency)
 
 ### Alice
-- `androidx.room` + `net.zetetic:android-database-sqlcipher` — encrypted storage
+- `androidx.room` — storage with BouncyCastle TypeConverters for column-level encryption at rest
 - `androidx.camera:camera-camera2/lifecycle/view` — CameraX
 - `androidx.navigation3:navigation3-runtime/ui:1.0.1` — Navigation 3 stable
 - Jetpack Compose BOM
 - Custom `InputMethodService` keyboard — covers a-z, 0-9, space only. `FLAG_SECURE` set.
 
 ### Bob
-- `androidx.room` + SQLCipher — encrypted contact directory
+- `androidx.room` — encrypted contact directory via BouncyCastle TypeConverters
 - CameraX, Navigation 3, Compose BOM (same as Alice)
 - Deep link delivery: SMS (`smsto:`), WhatsApp (`whatsapp://send`), Telegram (`tg://resolve`)
 
