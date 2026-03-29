@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "org.bob.cheshire.cat.core.ui"
+
+    defaultConfig {
+        minSdk = 26
+    }
 }
 
 dependencies {

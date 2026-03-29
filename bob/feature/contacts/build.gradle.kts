@@ -5,4 +5,8 @@ plugins {
 
 android {
     namespace = "org.bob.cheshire.cat.feature.contacts"
+
+    defaultConfig {
+        minSdk = 26
+    }
 }
