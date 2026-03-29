@@ -25,6 +25,12 @@ kotlinxSerialization    = "1.10.0"
 # DI
 koin                    = "4.2.0"
 
+# Camera
+cameraX                 = "1.6.0"
+
+# ML Kit
+mlkitBarcode            = "17.3.0"
+
 # Crypto / encoding
 bouncyCastle            = "1.83"
 zstdJni                 = "1.5.7-7"
@@ -64,6 +70,14 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui",    name =
 androidx-compose-ui-test-manifest   = { group = "androidx.compose.ui",    name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4     = { group = "androidx.compose.ui",    name = "ui-test-junit4" }
 androidx-compose-material3          = { group = "androidx.compose.material3", name = "material3" }
+
+# CameraX
+androidx-camera-camera2             = { module = "androidx.camera:camera-camera2",   version.ref = "cameraX" }
+androidx-camera-lifecycle           = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX" }
+androidx-camera-view                = { module = "androidx.camera:camera-view",      version.ref = "cameraX" }
+
+# ML Kit
+mlkit-barcode                       = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcode" }
 
 # Room
 androidx-room-runtime               = { module = "androidx.room:room-runtime",   version.ref = "room" }

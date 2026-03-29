@@ -4,6 +4,12 @@ This file is read at the start of every session. It is the single source of trut
 
 ---
 
+## Session Continuity
+
+When resuming work, read the project's design docs and recent files before asking the user to re-explain context. Key design docs are in the project root. Grok has contributed sections to design documents — treat those as authoritative.
+
+---
+
 ## Project Context
 
 This is a multi-module Android project (Miss Charming) using Kotlin 2.3, Jetpack Compose with M3 theming, and Koin for dependency injection. Always reference the latest Kotlin 2.3 syntax — do not guess at newer language features like explicit backing fields; fetch the actual docs if unsure.
@@ -111,6 +117,12 @@ These rules override every Google guide, Now in Android reference, and linter de
 - The rules above are locked. Do not re-open them.
 - **Kotlin 2.0+ syntax — fetch before writing.** Before writing any Kotlin code that uses features from Kotlin 2.0+, fetch the relevant page from `kotlinlang.org/docs` and verify the exact syntax. Do not guess. Do not rely on training data for newer language features. Fetch first, write second.
 
+## Language & Framework
+
+This is an Android project using Kotlin 2.3+. Always check actual Kotlin documentation before suggesting syntax for newer language features (e.g., explicit backing fields). Do not assume syntax from older versions.
+
+---
+
 ## Code Style & Conventions
 
 For module and package naming decisions, always present options and let the user choose. Do not default to generic names like 'compose'. Follow existing project naming conventions visible in settings.gradle.kts.
@@ -164,6 +176,12 @@ The naming rules above are locked for decisions already made. For any naming dec
 - No `androidx.biometric` — bypassable, PIN only
 - No JUnit 5 — JUnit 4 preferred
 - No `co.nstant.in:cbor` — replaced by `kotlinx-serialization-cbor`
+
+---
+
+## Architecture Decisions
+
+Encryption approach: Use BouncyCastle with Room TypeConverters for field-level encryption. Do NOT suggest SQLCipher. DI framework: Koin (not Hilt/Dagger).
 
 ---
 
@@ -248,6 +266,24 @@ fun messagingPresenter(events: Flow<MessagingEvent>): MessagingState {
 ```
 
 Phase 1b (ViewModel-based MVI with `StateFlow` + `dispatch()`) is the named fallback if Molecule proves insufficient. Switch is per-feature — never mix patterns within a single feature.
+
+---
+
+## Code Generation Rules
+
+**FETCH DOCS FIRST. ALWAYS. NO EXCEPTIONS.**
+
+Before writing a single line of code — regardless of how simple or obvious it seems — fetch and read the authoritative documentation for every library and language feature the task touches. The Documentation Registry below contains the URLs. Use them. Every time.
+
+This means:
+- Identify what libraries and language features the task uses
+- Fetch the relevant URL(s) from the Documentation Registry
+- Read the actual current API surface and syntax from the fetched page
+- Only then write code — based on what was fetched, never from training memory
+
+This applies to Kotlin, AGP, Room, Koin, Arrow, Compose, Navigation, BouncyCastle, ZXing, Turbine — everything. There are no exceptions for "simple" cases. There are no exceptions under time pressure. If a URL is not in the registry, find the official source and fetch it anyway, and state what was fetched before writing anything.
+
+When the user provides reference source code or points to specific documentation URLs, always read and follow them before generating code. Do not hallucinate APIs or syntax.
 
 ---
 
@@ -374,6 +410,12 @@ Before declaring any dependency version in `libs.versions.toml`, `build.gradle.k
 - cargo-ndk (Phase 2 only): https://github.com/bbqsrc/cargo-ndk
 - Android JNI tips (Phase 2 only): https://developer.android.com/training/articles/perf-jni
 - Android NDK guide (Phase 2 only): https://developer.android.com/ndk/guides
+
+---
+
+## Build System
+
+This is a multi-module Android project. Library modules do NOT generate BuildConfig by default — use `android { buildFeatures { buildConfig = true } }` in library module build files if BuildConfig is needed. Avoid adding unnecessary desugaring or deprecated APIs.
 
 ---
 
