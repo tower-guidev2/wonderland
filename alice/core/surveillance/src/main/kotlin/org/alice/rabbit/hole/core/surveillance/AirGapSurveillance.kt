@@ -1,0 +1,111 @@
+package org.alice.rabbit.hole.core.surveillance
+
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import org.alice.rabbit.hole.core.surveillance.api.AirGapStatus
+import org.alice.rabbit.hole.core.surveillance.api.AirGapViolation
+import org.alice.rabbit.hole.core.surveillance.api.IAirGapSurveillance
+
+class AirGapSurveillance(
+    private val context: Context,
+    private val applicationScope: CoroutineScope,
+    private val isDebugBuild: Boolean,
+) : IAirGapSurveillance {
+
+    private val mutableStatus: MutableStateFlow<AirGapStatus> = MutableStateFlow(AirGapStatus.Secure)
+    override val status: StateFlow<AirGapStatus> = mutableStatus.asStateFlow()
+
+    private val mutableViolations: MutableSharedFlow<AirGapViolation> = MutableSharedFlow()
+    override val violations: Flow<AirGapViolation> = mutableViolations.asSharedFlow()
+
+    fun setCompromised(violation: AirGapViolation) {
+        mutableStatus.value = AirGapStatus.Compromised(violation)
+    }
+
+    fun broadcastFlow(): Flow<AirGapViolation> = callbackFlow {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(receiverContext: Context, intent: Intent) {
+                val data = BroadcastData(
+                    action = intent.action,
+                    booleanExtras = extractBooleanExtras(intent),
+                    intExtras = extractIntExtras(intent),
+                    stringExtras = extractStringExtras(intent),
+                    stringArrayExtras = extractStringArrayExtras(intent),
+                )
+                val violation = IntentToViolationMapper.map(data) ?: return
+                if (isDebugBuild && violation == AirGapViolation.UsbPowerConnected) return
+                trySend(violation)
+            }
+        }
+
+        val intentFilter = IntentFilter().apply {
+            addAction("android.intent.action.AIRPLANE_MODE")
+            addAction("android.bluetooth.adapter.action.STATE_CHANGED")
+            addAction("android.nfc.action.ADAPTER_STATE_CHANGED")
+            addAction("android.intent.action.SIM_STATE_CHANGED")
+            addAction("android.net.wifi.WIFI_STATE_CHANGED")
+            addAction("android.net.wifi.p2p.STATE_CHANGED")
+            addAction("android.net.conn.TETHER_STATE_CHANGED")
+            addAction("android.hardware.usb.action.USB_STATE")
+        }
+
+        context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        awaitClose { context.unregisterReceiver(receiver) }
+    }
+
+    fun startCollecting() {
+        applicationScope.launch {
+            broadcastFlow().collect { violation ->
+                mutableStatus.value = AirGapStatus.Compromised(violation)
+                mutableViolations.emit(violation)
+            }
+        }
+    }
+
+    private fun extractBooleanExtras(intent: Intent): Map<String, Boolean> {
+        val extras = mutableMapOf<String, Boolean>()
+        if (intent.hasExtra("state")) extras["state"] = intent.getBooleanExtra("state", false)
+        if (intent.hasExtra("connected")) extras["connected"] = intent.getBooleanExtra("connected", false)
+        return extras
+    }
+
+    private fun extractIntExtras(intent: Intent): Map<String, Int> {
+        val extras = mutableMapOf<String, Int>()
+        val intKeys = listOf(
+            "android.bluetooth.adapter.extra.STATE",
+            "android.nfc.extra.ADAPTER_STATE",
+            "wifi_state",
+            "wifi_p2p_state",
+        )
+        intKeys.forEach { key ->
+            if (intent.hasExtra(key)) extras[key] = intent.getIntExtra(key, -1)
+        }
+        return extras
+    }
+
+    private fun extractStringExtras(intent: Intent): Map<String, String?> {
+        val extras = mutableMapOf<String, String?>()
+        if (intent.hasExtra("ss")) extras["ss"] = intent.getStringExtra("ss")
+        return extras
+    }
+
+    @Suppress("DEPRECATION")
+    private fun extractStringArrayExtras(intent: Intent): Map<String, Array<String>> {
+        val extras = mutableMapOf<String, Array<String>>()
+        val tetherArray = intent.getStringArrayExtra("tetherArray")
+        if (tetherArray != null) extras["tetherArray"] = tetherArray
+        return extras
+    }
+}
