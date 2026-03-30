@@ -16,6 +16,11 @@ object StandardTierChecks {
         if (networkStateProvider.displayCount() > SINGLE_DISPLAY_COUNT) violations.add(AirGapViolation.DisplayMirroringActive)
         if (networkStateProvider.isOemUnlockEnabled()) violations.add(AirGapViolation.OemUnlockEnabled)
 
+        // Spec (Section 4.2) defines three additional checks for this tier — USB device list (UsbManager.getDeviceList()),
+        // storage encryption status (DevicePolicyManager.getStorageEncryptionStatus()), and UWB hardware presence
+        // (PackageManager.hasSystemFeature). None of these map to a defined AirGapViolation type.
+        // usbDeviceCount() is available on INetworkStateProvider for future use once violation types are specified.
+
         return violations
     }
 }

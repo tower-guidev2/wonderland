@@ -12,7 +12,8 @@ class NetworkStateProvider(private val context: Context) : INetworkStateProvider
     override fun hasActiveNetwork(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
             ?: return false
-        return connectivityManager.activeNetwork != null
+        connectivityManager.activeNetwork ?: return false
+        return true
     }
 
     override fun hasVpnNetwork(): Boolean {
@@ -25,7 +26,10 @@ class NetworkStateProvider(private val context: Context) : INetworkStateProvider
     }
 
     override fun hasTetheredInterfaces(): Boolean {
-        return Settings.Global.getString(context.contentResolver, "tethering_on")?.toIntOrNull() == 1
+        val intent = context.registerReceiver(null, android.content.IntentFilter("android.net.conn.TETHER_STATE_CHANGED"))
+        @Suppress("DEPRECATION")
+        val tetherArray = intent?.getStringArrayExtra("tetherArray")
+        return tetherArray != null && tetherArray.isNotEmpty()
     }
 
     override fun displayCount(): Int {

@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.wifi.aware.WifiAwareManager
+import android.os.BatteryManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +24,7 @@ class AirGapSurveillance(
     private val context: Context,
     private val applicationScope: CoroutineScope,
     private val isDebugBuild: Boolean,
+    private val networkMonitor: AirGapNetworkMonitor,
 ) : IAirGapSurveillance {
 
     private val mutableStatus: MutableStateFlow<AirGapStatus> = MutableStateFlow(AirGapStatus.Secure)
@@ -37,10 +40,12 @@ class AirGapSurveillance(
     fun broadcastFlow(): Flow<AirGapViolation> = callbackFlow {
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(receiverContext: Context, intent: Intent) {
+                val augmentedIntExtras = buildAugmentedIntExtras(receiverContext, intent)
+                val augmentedBooleanExtras = buildAugmentedBooleanExtras(receiverContext, intent)
                 val data = BroadcastData(
                     action = intent.action,
-                    booleanExtras = extractBooleanExtras(intent),
-                    intExtras = extractIntExtras(intent),
+                    booleanExtras = augmentedBooleanExtras,
+                    intExtras = augmentedIntExtras,
                     stringExtras = extractStringExtras(intent),
                     stringArrayExtras = extractStringArrayExtras(intent),
                 )
@@ -59,6 +64,8 @@ class AirGapSurveillance(
             addAction("android.net.wifi.p2p.STATE_CHANGED")
             addAction("android.net.conn.TETHER_STATE_CHANGED")
             addAction("android.hardware.usb.action.USB_STATE")
+            addAction("android.intent.action.ACTION_POWER_CONNECTED")
+            addAction("android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED")
         }
 
         context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
@@ -72,16 +79,32 @@ class AirGapSurveillance(
                 mutableViolations.emit(violation)
             }
         }
+        applicationScope.launch {
+            networkMonitor.allNetworkFlow().collect { violation ->
+                mutableStatus.value = AirGapStatus.Compromised(violation)
+                mutableViolations.emit(violation)
+            }
+        }
+        applicationScope.launch {
+            networkMonitor.vpnNetworkFlow().collect { violation ->
+                mutableStatus.value = AirGapStatus.Compromised(violation)
+                mutableViolations.emit(violation)
+            }
+        }
     }
 
-    private fun extractBooleanExtras(intent: Intent): Map<String, Boolean> {
+    private fun buildAugmentedBooleanExtras(receiverContext: Context, intent: Intent): Map<String, Boolean> {
         val extras = mutableMapOf<String, Boolean>()
         if (intent.hasExtra("state")) extras["state"] = intent.getBooleanExtra("state", false)
         if (intent.hasExtra("connected")) extras["connected"] = intent.getBooleanExtra("connected", false)
+        if (intent.action == "android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED") {
+            val wifiAwareManager = receiverContext.getSystemService(Context.WIFI_AWARE_SERVICE) as? WifiAwareManager
+            extras["wifi_aware_available"] = wifiAwareManager?.isAvailable ?: false
+        }
         return extras
     }
 
-    private fun extractIntExtras(intent: Intent): Map<String, Int> {
+    private fun buildAugmentedIntExtras(receiverContext: Context, intent: Intent): Map<String, Int> {
         val extras = mutableMapOf<String, Int>()
         val intKeys = listOf(
             "android.bluetooth.adapter.extra.STATE",
@@ -91,6 +114,11 @@ class AirGapSurveillance(
         )
         intKeys.forEach { key ->
             if (intent.hasExtra(key)) extras[key] = intent.getIntExtra(key, -1)
+        }
+        if (intent.action == "android.intent.action.ACTION_POWER_CONNECTED") {
+            val batteryIntent = receiverContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val plugged = batteryIntent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
+            if (plugged >= 0) extras["plugged"] = plugged
         }
         return extras
     }

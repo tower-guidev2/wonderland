@@ -141,6 +141,30 @@ class IntentToViolationMapperTest {
     }
 
     @Test
+    fun powerConnectedUsbProducesViolation() {
+        val data = BroadcastData(action = "android.intent.action.ACTION_POWER_CONNECTED", intExtras = mapOf("plugged" to 2))
+        assertThat(IntentToViolationMapper.map(data)).isEqualTo(AirGapViolation.UsbPowerConnected)
+    }
+
+    @Test
+    fun powerConnectedAcProducesNull() {
+        val data = BroadcastData(action = "android.intent.action.ACTION_POWER_CONNECTED", intExtras = mapOf("plugged" to 1))
+        assertThat(IntentToViolationMapper.map(data)).isNull()
+    }
+
+    @Test
+    fun wifiAwareAvailableProducesViolation() {
+        val data = BroadcastData(action = "android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED", booleanExtras = mapOf("wifi_aware_available" to true))
+        assertThat(IntentToViolationMapper.map(data)).isEqualTo(AirGapViolation.WifiAwareEnabled)
+    }
+
+    @Test
+    fun wifiAwareUnavailableProducesNull() {
+        val data = BroadcastData(action = "android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED", booleanExtras = mapOf("wifi_aware_available" to false))
+        assertThat(IntentToViolationMapper.map(data)).isNull()
+    }
+
+    @Test
     fun nullActionProducesNull() {
         assertThat(IntentToViolationMapper.map(BroadcastData(action = null))).isNull()
     }

@@ -20,13 +20,13 @@ object DeviceIntegrityVerifier {
     )
 
     fun verifyBuildProperties(provider: IBuildPropertyProvider): AirGapViolation? {
-        if (provider.manufacturer() != EXPECTED_MANUFACTURER) {
+        if ((provider.manufacturer() == EXPECTED_MANUFACTURER).not()) {
             return AirGapViolation.DeviceIntegrityFailed(reason = "manufacturer is not $EXPECTED_MANUFACTURER")
         }
-        if (provider.brand() != EXPECTED_BRAND) {
+        if ((provider.brand() == EXPECTED_BRAND).not()) {
             return AirGapViolation.DeviceIntegrityFailed(reason = "brand is not $EXPECTED_BRAND")
         }
-        if (provider.device() !in knownPixelCodenames) {
+        if ((provider.device() in knownPixelCodenames).not()) {
             return AirGapViolation.DeviceIntegrityFailed(reason = "device codename ${provider.device()} is not a known Pixel")
         }
         if (provider.sdkVersion() < MINIMUM_SDK_VERSION) {

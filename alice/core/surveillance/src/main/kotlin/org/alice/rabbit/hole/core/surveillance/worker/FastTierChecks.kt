@@ -26,7 +26,7 @@ object FastTierChecks {
         if (adapterStateProvider.isWifiAwareAvailable()) violations.add(AirGapViolation.WifiAwareEnabled)
         if (adapterStateProvider.isLocationEnabled()) violations.add(AirGapViolation.LocationEnabled)
         if (adapterStateProvider.isAccessibilityEnabled()) violations.add(AirGapViolation.AccessibilityServiceActive)
-        if (adapterStateProvider.simState() != SIM_STATE_ABSENT) violations.add(AirGapViolation.SimPresent)
+        if ((adapterStateProvider.simState() == SIM_STATE_ABSENT).not()) violations.add(AirGapViolation.SimPresent)
 
         return violations
     }

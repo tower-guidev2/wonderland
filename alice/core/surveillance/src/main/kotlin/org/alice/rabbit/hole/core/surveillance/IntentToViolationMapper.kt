@@ -25,6 +25,8 @@ object IntentToViolationMapper {
     private const val ACTION_WIFI_P2P_STATE_CHANGED = "android.net.wifi.p2p.STATE_CHANGED"
     private const val ACTION_TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED"
     private const val ACTION_USB_STATE = "android.hardware.usb.action.USB_STATE"
+    private const val ACTION_POWER_CONNECTED = "android.intent.action.ACTION_POWER_CONNECTED"
+    private const val ACTION_WIFI_AWARE_STATE_CHANGED = "android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED"
 
     private const val EXTRA_BLUETOOTH_STATE = "android.bluetooth.adapter.extra.STATE"
     private const val EXTRA_NFC_STATE = "android.nfc.extra.ADAPTER_STATE"
@@ -33,6 +35,9 @@ object IntentToViolationMapper {
     private const val EXTRA_SIM_STATE = "ss"
     private const val EXTRA_TETHER_ARRAY = "tetherArray"
     private const val EXTRA_USB_CONNECTED = "connected"
+    private const val EXTRA_PLUGGED = "plugged"
+    private const val EXTRA_WIFI_AWARE_AVAILABLE = "wifi_aware_available"
+    private const val BATTERY_PLUGGED_USB = 2
 
     fun map(data: BroadcastData): AirGapViolation? {
         return when (data.action) {
@@ -44,6 +49,8 @@ object IntentToViolationMapper {
             ACTION_WIFI_P2P_STATE_CHANGED -> mapWifiDirect(data)
             ACTION_TETHER_STATE_CHANGED -> mapTethering(data)
             ACTION_USB_STATE -> mapUsb(data)
+            ACTION_POWER_CONNECTED -> mapPowerConnected(data)
+            ACTION_WIFI_AWARE_STATE_CHANGED -> mapWifiAware(data)
             else -> null
         }
     }
@@ -95,5 +102,15 @@ object IntentToViolationMapper {
     private fun mapUsb(data: BroadcastData): AirGapViolation? {
         val connected = data.booleanExtras[EXTRA_USB_CONNECTED] ?: return null
         return if (connected) AirGapViolation.UsbPowerConnected else null
+    }
+
+    private fun mapPowerConnected(data: BroadcastData): AirGapViolation? {
+        val pluggedType = data.intExtras[EXTRA_PLUGGED] ?: return null
+        return if (pluggedType == BATTERY_PLUGGED_USB) AirGapViolation.UsbPowerConnected else null
+    }
+
+    private fun mapWifiAware(data: BroadcastData): AirGapViolation? {
+        val available = data.booleanExtras[EXTRA_WIFI_AWARE_AVAILABLE] ?: return null
+        return if (available) AirGapViolation.WifiAwareEnabled else null
     }
 }
