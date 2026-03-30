@@ -42,6 +42,7 @@ include(":core:qr")
 
 // Alice — D1 Vault (air-gapped, minSdk 33)
 include(":alice:app")
+include(":alice:core:surveillance_api")
 include(":alice:core:surveillance")
 include(":alice:core:ui")
 include(":alice:feature:contacts")
