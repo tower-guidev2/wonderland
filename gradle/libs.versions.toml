@@ -17,6 +17,9 @@ activityCompose         = "1.13.0"
 composeBom              = "2026.03.01"
 navigation3             = "1.0.1"
 room                    = "2.8.4"
+workManager             = "2.11.2"
+appStartup              = "1.2.0"
+androidxTestCore        = "1.7.0"
 
 # Kotlin
 kotlinxCoroutines       = "1.10.2"
@@ -83,6 +86,16 @@ mlkit-barcode                       = { module = "com.google.mlkit:barcode-scann
 androidx-room-runtime               = { module = "androidx.room:room-runtime",   version.ref = "room" }
 androidx-room-ktx                   = { module = "androidx.room:room-ktx",        version.ref = "room" }
 androidx-room-compiler              = { module = "androidx.room:room-compiler",   version.ref = "room" }
+
+# WorkManager
+androidx-work-runtime-ktx           = { module = "androidx.work:work-runtime-ktx",           version.ref = "workManager" }
+androidx-work-testing               = { module = "androidx.work:work-testing",                version.ref = "workManager" }
+
+# App Startup
+androidx-startup-runtime            = { module = "androidx.startup:startup-runtime",          version.ref = "appStartup" }
+
+# Test Core
+androidx-test-core                  = { module = "androidx.test:core",                        version.ref = "androidxTestCore" }
 
 # Kotlin
 kotlinx-coroutines-android          = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
