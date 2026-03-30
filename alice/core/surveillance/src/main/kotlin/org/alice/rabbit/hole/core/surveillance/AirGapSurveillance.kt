@@ -1,10 +1,14 @@
 package org.alice.rabbit.hole.core.surveillance
 
+import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.wifi.WifiManager
 import android.net.wifi.aware.WifiAwareManager
+import android.net.wifi.p2p.WifiP2pManager
+import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -19,6 +23,10 @@ import kotlinx.coroutines.launch
 import org.alice.rabbit.hole.core.surveillance.api.AirGapStatus
 import org.alice.rabbit.hole.core.surveillance.api.AirGapViolation
 import org.alice.rabbit.hole.core.surveillance.api.IAirGapSurveillance
+
+private const val ACTION_SIM_STATE_CHANGED = "android.intent.action.SIM_STATE_CHANGED"
+private const val ACTION_TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED"
+private const val ACTION_USB_STATE = "android.hardware.usb.action.USB_STATE"
 
 class AirGapSurveillance(
     private val context: Context,
@@ -56,16 +64,16 @@ class AirGapSurveillance(
         }
 
         val intentFilter = IntentFilter().apply {
-            addAction("android.intent.action.AIRPLANE_MODE")
-            addAction("android.bluetooth.adapter.action.STATE_CHANGED")
-            addAction("android.nfc.action.ADAPTER_STATE_CHANGED")
-            addAction("android.intent.action.SIM_STATE_CHANGED")
-            addAction("android.net.wifi.WIFI_STATE_CHANGED")
-            addAction("android.net.wifi.p2p.STATE_CHANGED")
-            addAction("android.net.conn.TETHER_STATE_CHANGED")
-            addAction("android.hardware.usb.action.USB_STATE")
-            addAction("android.intent.action.ACTION_POWER_CONNECTED")
-            addAction("android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED")
+            addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+            addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
+            addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
+            addAction(ACTION_SIM_STATE_CHANGED)
+            addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
+            addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
+            addAction(ACTION_TETHER_STATE_CHANGED)
+            addAction(ACTION_USB_STATE)
+            addAction(Intent.ACTION_POWER_CONNECTED)
+            addAction(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED)
         }
 
         context.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
@@ -97,7 +105,7 @@ class AirGapSurveillance(
         val extras = mutableMapOf<String, Boolean>()
         if (intent.hasExtra("state")) extras["state"] = intent.getBooleanExtra("state", false)
         if (intent.hasExtra("connected")) extras["connected"] = intent.getBooleanExtra("connected", false)
-        if (intent.action == "android.net.wifi.aware.action.WIFI_AWARE_STATE_CHANGED") {
+        if (intent.action == WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED) {
             val wifiAwareManager = receiverContext.getSystemService(Context.WIFI_AWARE_SERVICE) as? WifiAwareManager
             extras["wifi_aware_available"] = wifiAwareManager?.isAvailable ?: false
         }
@@ -115,7 +123,7 @@ class AirGapSurveillance(
         intKeys.forEach { key ->
             if (intent.hasExtra(key)) extras[key] = intent.getIntExtra(key, -1)
         }
-        if (intent.action == "android.intent.action.ACTION_POWER_CONNECTED") {
+        if (intent.action == Intent.ACTION_POWER_CONNECTED) {
             val batteryIntent = receiverContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
             val plugged = batteryIntent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) ?: -1
             if (plugged >= 0) extras["plugged"] = plugged

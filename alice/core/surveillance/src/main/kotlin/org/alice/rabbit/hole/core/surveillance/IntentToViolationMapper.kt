@@ -38,6 +38,7 @@ object IntentToViolationMapper {
     private const val EXTRA_PLUGGED = "plugged"
     private const val EXTRA_WIFI_AWARE_AVAILABLE = "wifi_aware_available"
     private const val BATTERY_PLUGGED_USB = 2
+    private const val SIM_STATE_VALUE_ABSENT = "ABSENT"
 
     fun map(data: BroadcastData): AirGapViolation? {
         return when (data.action) {
@@ -77,7 +78,7 @@ object IntentToViolationMapper {
 
     private fun mapSim(data: BroadcastData): AirGapViolation? {
         val state = data.stringExtras[EXTRA_SIM_STATE]
-        return if (state == "ABSENT") null else AirGapViolation.SimPresent
+        return if (state == SIM_STATE_VALUE_ABSENT) null else AirGapViolation.SimPresent
     }
 
     private fun mapWifi(data: BroadcastData): AirGapViolation? {

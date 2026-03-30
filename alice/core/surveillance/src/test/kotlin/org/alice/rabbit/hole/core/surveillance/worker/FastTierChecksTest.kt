@@ -9,9 +9,14 @@ import org.junit.Test
 class FastTierChecksTest {
 
     private val secureSettings = mapOf(
-        "airplane_mode_on" to 1, "wifi_on" to 0, "bluetooth_on" to 0,
-        "nfc_on" to 0, "ble_scan_always_enabled" to 0, "adb_enabled" to 0,
-        "adb_wifi_enabled" to 0, "development_settings_enabled" to 0,
+        FastTierChecks.SETTING_AIRPLANE_MODE to FastTierChecks.SETTING_ENABLED,
+        FastTierChecks.SETTING_WIFI to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_BLUETOOTH to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_NFC to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_BLUETOOTH_LOW_ENERGY_SCAN to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_ADB to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_ADB_WIRELESS to FastTierChecks.SETTING_DISABLED,
+        FastTierChecks.SETTING_DEVELOPER_OPTIONS to FastTierChecks.SETTING_DISABLED,
     )
 
     @Test
@@ -22,43 +27,43 @@ class FastTierChecksTest {
 
     @Test
     fun airplaneModeOffProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("airplane_mode_on" to 0))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_AIRPLANE_MODE to FastTierChecks.SETTING_DISABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.AirplaneModeDisabled)
     }
 
     @Test
     fun wifiOnProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("wifi_on" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_WIFI to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.WifiEnabled)
     }
 
     @Test
     fun bluetoothOnProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("bluetooth_on" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_BLUETOOTH to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.BluetoothEnabled)
     }
 
     @Test
     fun nfcOnProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("nfc_on" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_NFC to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.NfcEnabled)
     }
 
     @Test
     fun bleBackgroundScanProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("ble_scan_always_enabled" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_BLUETOOTH_LOW_ENERGY_SCAN to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.BluetoothBackgroundScanEnabled)
     }
 
     @Test
     fun adbEnabledProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("adb_enabled" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_ADB to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.AdbEnabled)
     }
 
     @Test
     fun developerOptionsProducesViolation() {
-        val settings = FakeSettingsProvider(secureSettings + ("development_settings_enabled" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_DEVELOPER_OPTIONS to FastTierChecks.SETTING_ENABLED))
         assertThat(FastTierChecks.execute(settings, FakeAdapterStateProvider())).contains(AirGapViolation.DeveloperOptionsEnabled)
     }
 
@@ -80,7 +85,7 @@ class FastTierChecksTest {
 
     @Test
     fun multipleViolationsReturnedTogether() {
-        val settings = FakeSettingsProvider(secureSettings + ("airplane_mode_on" to 0) + ("wifi_on" to 1))
+        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_AIRPLANE_MODE to FastTierChecks.SETTING_DISABLED) + (FastTierChecks.SETTING_WIFI to FastTierChecks.SETTING_ENABLED))
         val violations = FastTierChecks.execute(settings, FakeAdapterStateProvider())
         assertThat(violations).contains(AirGapViolation.AirplaneModeDisabled)
         assertThat(violations).contains(AirGapViolation.WifiEnabled)
