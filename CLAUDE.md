@@ -67,7 +67,9 @@ From `docs/design.md` Section 9:
 @docs/rules/build.md
 @docs/rules/dependencies.md
 @docs/rules/testing.md
-@docs/rules/security.md
+@docs/rules/security.md  
+@docs/rules/cyber-security-air-gapped.md  
+@docs/rules/cyber-security-networked.md
 @docs/rules/crypto-protocol.md
 @docs/rules/qr-protocol.md
 @docs/rules/zkp.md
@@ -80,4 +82,4 @@ After every session:
 - New rules, decisions, or patterns → written to the appropriate `docs/rules/*.md` file, never to root CLAUDE.md
 - Root CLAUDE.md is append-prohibited except for new `@import` lines
 - Module-specific session knowledge → nearest subdirectory CLAUDE.md
-- If no rules file exists for a topic, create one and add the `@import` here
+- If no rules file exists for a topic, create one and add the `@import` here, DONT CHANGE ANYTHONG ELSE AT ALL!!!!!!!!!!!!!!
