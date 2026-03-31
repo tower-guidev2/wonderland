@@ -4,7 +4,6 @@ import androidx.work.WorkManager
 import org.alice.rabbit.hole.core.surveillance.AirGapNetworkMonitor
 import org.alice.rabbit.hole.core.surveillance.AirGapSurveillance
 import org.alice.rabbit.hole.core.surveillance.BuildConfig
-import org.alice.rabbit.hole.core.surveillance.api.AirGapViolation
 import org.alice.rabbit.hole.core.surveillance.api.IAirGapSurveillance
 import org.alice.rabbit.hole.core.surveillance.provider.AdapterStateProvider
 import org.alice.rabbit.hole.core.surveillance.provider.BuildPropertyProvider
@@ -18,6 +17,7 @@ import org.alice.rabbit.hole.core.surveillance.worker.IViolationHandler
 import org.alice.rabbit.hole.core.surveillance.worker.IWorkScheduler
 import org.alice.rabbit.hole.core.surveillance.worker.WorkScheduler
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val surveillanceModule = module {
@@ -29,22 +29,18 @@ val surveillanceModule = module {
 
     single { AirGapNetworkMonitor(androidContext()) }
 
-    single<IAirGapSurveillance> {
+    single {
         AirGapSurveillance(
             context = androidContext(),
             applicationScope = get(),
             isDebugBuild = BuildConfig.DEBUG,
             networkMonitor = get(),
         )
-    }
+    } bind IAirGapSurveillance::class
 
     single<IViolationHandler> {
-        val surveillance = get<IAirGapSurveillance>() as AirGapSurveillance
-        object : IViolationHandler {
-            override suspend fun handle(violation: AirGapViolation) {
-                surveillance.setCompromised(violation)
-            }
-        }
+        val surveillance = get<AirGapSurveillance>()
+        IViolationHandler { violation -> surveillance.setCompromised(violation) }
     }
 
     single<IWorkScheduler> { WorkScheduler(WorkManager.getInstance(androidContext())) }

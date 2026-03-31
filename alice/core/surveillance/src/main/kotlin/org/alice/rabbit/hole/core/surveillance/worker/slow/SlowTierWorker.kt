@@ -1,12 +1,14 @@
-package org.alice.rabbit.hole.core.surveillance.worker
+package org.alice.rabbit.hole.core.surveillance.worker.slow
 
 import android.content.Context
 import androidx.work.WorkerParameters
 import org.alice.rabbit.hole.core.surveillance.integrity.DeviceIntegrityVerifier
 import org.alice.rabbit.hole.core.surveillance.provider.IBuildPropertyProvider
+import org.alice.rabbit.hole.core.surveillance.worker.BaseWorker
+import org.alice.rabbit.hole.core.surveillance.worker.IViolationHandler
 
 class SlowTierWorker(
-    context: Context,
+    appContext: Context,
     workerParameters: WorkerParameters,
     private val buildPropertyProvider: IBuildPropertyProvider,
     private val violationHandler: IViolationHandler,

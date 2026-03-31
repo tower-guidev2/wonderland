@@ -8,10 +8,10 @@ import org.alice.rabbit.hole.core.surveillance.provider.IAdapterStateProvider
 import org.alice.rabbit.hole.core.surveillance.provider.IBuildPropertyProvider
 import org.alice.rabbit.hole.core.surveillance.provider.INetworkStateProvider
 import org.alice.rabbit.hole.core.surveillance.provider.ISettingsProvider
-import org.alice.rabbit.hole.core.surveillance.worker.FastTierWorker
 import org.alice.rabbit.hole.core.surveillance.worker.IViolationHandler
-import org.alice.rabbit.hole.core.surveillance.worker.SlowTierWorker
-import org.alice.rabbit.hole.core.surveillance.worker.StandardTierWorker
+import org.alice.rabbit.hole.core.surveillance.worker.fast.FastTierWorker
+import org.alice.rabbit.hole.core.surveillance.worker.slow.SlowTierWorker
+import org.alice.rabbit.hole.core.surveillance.worker.standard.StandardTierWorker
 
 class SurveillanceWorkerFactory(
     private val settingsProvider: ISettingsProvider,
@@ -22,14 +22,14 @@ class SurveillanceWorkerFactory(
 ) : WorkerFactory() {
 
     override fun createWorker(
-        applicationContext: Context,
+        appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters,
     ): ListenableWorker? {
         return when (workerClassName) {
-            FastTierWorker::class.java.name -> FastTierWorker(applicationContext, workerParameters, settingsProvider, adapterStateProvider, violationHandler)
-            StandardTierWorker::class.java.name -> StandardTierWorker(applicationContext, workerParameters, networkStateProvider, violationHandler)
-            SlowTierWorker::class.java.name -> SlowTierWorker(applicationContext, workerParameters, buildPropertyProvider, violationHandler)
+            FastTierWorker::class.java.name -> FastTierWorker(appContext, workerParameters, settingsProvider, adapterStateProvider, violationHandler)
+            StandardTierWorker::class.java.name -> StandardTierWorker(appContext, workerParameters, networkStateProvider, violationHandler)
+            SlowTierWorker::class.java.name -> SlowTierWorker(appContext, workerParameters, buildPropertyProvider, violationHandler)
             else -> null
         }
     }

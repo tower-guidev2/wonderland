@@ -16,10 +16,10 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.koin.android)
+    implementation(libs.koin.androidx.startup)
     implementation(libs.koin.core)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.startup.runtime)
-    implementation(libs.bouncycastle.bcprov)
 
     testImplementation(libs.assertk)
     testImplementation(libs.turbine)

@@ -3,6 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.bouncycastle.bcprov)
+    api(libs.bouncycastle.bcprov)
     implementation(projects.core.protocol)
 }

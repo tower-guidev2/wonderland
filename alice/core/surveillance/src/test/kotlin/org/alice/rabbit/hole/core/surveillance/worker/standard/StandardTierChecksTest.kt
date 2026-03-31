@@ -1,9 +1,10 @@
-package org.alice.rabbit.hole.core.surveillance.worker
+package org.alice.rabbit.hole.core.surveillance.worker.standard
 
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.isEmpty
 import org.alice.rabbit.hole.core.surveillance.api.AirGapViolation
+import org.alice.rabbit.hole.core.surveillance.worker.FakeNetworkStateProvider
 import org.junit.Test
 
 class StandardTierChecksTest {

@@ -1,11 +1,13 @@
-package org.alice.rabbit.hole.core.surveillance.worker
+package org.alice.rabbit.hole.core.surveillance.worker.standard
 
 import android.content.Context
 import androidx.work.WorkerParameters
 import org.alice.rabbit.hole.core.surveillance.provider.INetworkStateProvider
+import org.alice.rabbit.hole.core.surveillance.worker.BaseWorker
+import org.alice.rabbit.hole.core.surveillance.worker.IViolationHandler
 
 class StandardTierWorker(
-    context: Context,
+    appContext: Context,
     workerParameters: WorkerParameters,
     private val networkStateProvider: INetworkStateProvider,
     private val violationHandler: IViolationHandler,

@@ -1,12 +1,14 @@
-package org.alice.rabbit.hole.core.surveillance.worker
+package org.alice.rabbit.hole.core.surveillance.worker.fast
 
 import android.content.Context
 import androidx.work.WorkerParameters
 import org.alice.rabbit.hole.core.surveillance.provider.IAdapterStateProvider
 import org.alice.rabbit.hole.core.surveillance.provider.ISettingsProvider
+import org.alice.rabbit.hole.core.surveillance.worker.BaseWorker
+import org.alice.rabbit.hole.core.surveillance.worker.IViolationHandler
 
 class FastTierWorker(
-    context: Context,
+    appContext: Context,
     workerParameters: WorkerParameters,
     private val settingsProvider: ISettingsProvider,
     private val adapterStateProvider: IAdapterStateProvider,

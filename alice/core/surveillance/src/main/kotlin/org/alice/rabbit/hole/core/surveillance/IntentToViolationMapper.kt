@@ -97,7 +97,7 @@ object IntentToViolationMapper {
 
     private fun mapTethering(data: BroadcastData): AirGapViolation? {
         val tetheredInterfaces = data.stringArrayExtras[EXTRA_TETHER_ARRAY]
-        return if (tetheredInterfaces != null && tetheredInterfaces.isNotEmpty()) AirGapViolation.TetheringActive else null
+        return if (tetheredInterfaces.isNullOrEmpty().not()) AirGapViolation.TetheringActive else null
     }
 
     private fun mapUsb(data: BroadcastData): AirGapViolation? {

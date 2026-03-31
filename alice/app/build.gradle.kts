@@ -12,3 +12,9 @@ android {
         versionName = libs.versions.versionName.get()
     }
 }
+
+dependencies {
+    implementation(projects.core.cryptography)
+    implementation(projects.alice.core.surveillance)
+    implementation(libs.koin.androidx.startup)
+}

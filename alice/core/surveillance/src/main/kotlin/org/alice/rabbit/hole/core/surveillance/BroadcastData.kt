@@ -5,5 +5,5 @@ data class BroadcastData(
     val booleanExtras: Map<String, Boolean> = emptyMap(),
     val intExtras: Map<String, Int> = emptyMap(),
     val stringExtras: Map<String, String?> = emptyMap(),
-    val stringArrayExtras: Map<String, Array<String>> = emptyMap(),
+    val stringArrayExtras: Map<String, List<String>> = emptyMap(),
 )

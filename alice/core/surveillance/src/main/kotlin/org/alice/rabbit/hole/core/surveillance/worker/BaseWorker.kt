@@ -5,9 +5,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
 abstract class BaseWorker(
-    context: Context,
+    appContext: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(appContext, workerParameters) {
 
     abstract suspend fun doActualWork(): Result
 

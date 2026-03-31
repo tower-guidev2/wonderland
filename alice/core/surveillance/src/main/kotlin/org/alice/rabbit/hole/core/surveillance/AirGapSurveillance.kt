@@ -115,10 +115,10 @@ class AirGapSurveillance(
     private fun buildAugmentedIntExtras(receiverContext: Context, intent: Intent): Map<String, Int> {
         val extras = mutableMapOf<String, Int>()
         val intKeys = listOf(
-            "android.bluetooth.adapter.extra.STATE",
-            "android.nfc.extra.ADAPTER_STATE",
-            "wifi_state",
-            "wifi_p2p_state",
+            BluetoothAdapter.EXTRA_STATE,
+            NfcAdapter.EXTRA_ADAPTER_STATE,
+            WifiManager.EXTRA_WIFI_STATE,
+            WifiP2pManager.EXTRA_WIFI_STATE,
         )
         intKeys.forEach { key ->
             if (intent.hasExtra(key)) extras[key] = intent.getIntExtra(key, -1)
@@ -138,10 +138,10 @@ class AirGapSurveillance(
     }
 
     @Suppress("DEPRECATION")
-    private fun extractStringArrayExtras(intent: Intent): Map<String, Array<String>> {
-        val extras = mutableMapOf<String, Array<String>>()
+    private fun extractStringArrayExtras(intent: Intent): Map<String, List<String>> {
+        val extras = mutableMapOf<String, List<String>>()
         val tetherArray = intent.getStringArrayExtra("tetherArray")
-        if (tetherArray != null) extras["tetherArray"] = tetherArray
+        if (tetherArray != null) extras["tetherArray"] = tetherArray.toList()
         return extras
     }
 }

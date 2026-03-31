@@ -1,4 +1,4 @@
-package org.alice.rabbit.hole.core.surveillance.worker
+package org.alice.rabbit.hole.core.surveillance.worker.fast
 
 import org.alice.rabbit.hole.core.surveillance.api.AirGapViolation
 import org.alice.rabbit.hole.core.surveillance.provider.IAdapterStateProvider
