@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package org.alice.poc.airgap.detection
 
 class KeyDescription(
@@ -43,17 +45,17 @@ object Asn1Parser {
     private const val TAG_SEQUENCE = 0x30
     private const val TAG_OCTET_STRING = 0x04
     private const val LONG_FORM_LENGTH_MARKER = 0x80
+    private const val LONG_FORM_TAG_MARKER = 0x1F
+    private const val HIGH_TAG_CONTINUATION_BIT = 0x80
+    private const val HIGH_TAG_VALUE_MASK = 0x7F
 
     private const val ATTESTATION_SECURITY_LEVEL_INDEX = 1
     private const val ATTESTATION_CHALLENGE_INDEX = 4
+    private const val TEE_ENFORCED_INDEX = 7
 
+    private const val ROOT_OF_TRUST_TAG = 704
     private const val ROOT_OF_TRUST_DEVICE_LOCKED_INDEX = 1
     private const val ROOT_OF_TRUST_VERIFIED_BOOT_STATE_INDEX = 2
-
-    private const val CONTEXT_CLASS_MASK = 0xE0
-    private const val CONTEXT_CLASS_VALUE = 0xA0
-    private const val TAG_NUMBER_MASK = 0x1F
-    private const val ROOT_OF_TRUST_MINIMUM_TAG = 4
 
     private const val UNKNOWN_LEVEL = -1
     private const val UNKNOWN_BOOT_STATE = -1
@@ -74,17 +76,22 @@ object Asn1Parser {
 
         val sequenceLength = readLength(data, 1)
         val contentStart = 1 + sequenceLength.second
-        val elements = parseTlvElements(data, contentStart, contentStart + sequenceLength.first)
+        val topLevelElements = parseTlvElements(data, contentStart, contentStart + sequenceLength.first)
 
-        val attestationSecurityLevel = elements.getOrNull(ATTESTATION_SECURITY_LEVEL_INDEX)
+        val attestationSecurityLevel = topLevelElements.getOrNull(ATTESTATION_SECURITY_LEVEL_INDEX)
             ?.let { readIntegerValue(it.value) } ?: UNKNOWN_LEVEL
 
-        val attestationChallenge = elements.getOrNull(ATTESTATION_CHALLENGE_INDEX)
+        val attestationChallenge = topLevelElements.getOrNull(ATTESTATION_CHALLENGE_INDEX)
             ?.value ?: ByteArray(0)
 
-        val rootOfTrust = findRootOfTrust(elements)
-        val rootElements = if (rootOfTrust != null)
-            parseInnerSequenceElements(rootOfTrust)
+        val teeEnforced = topLevelElements.getOrNull(TEE_ENFORCED_INDEX)
+        val rootOfTrustData = if (teeEnforced != null)
+            findRootOfTrustInAuthorizationList(teeEnforced.value)
+        else
+            null
+
+        val rootElements = if (rootOfTrustData != null)
+            parseSequenceContent(rootOfTrustData)
         else
             emptyList()
 
@@ -102,14 +109,42 @@ object Asn1Parser {
         )
     }
 
-    private fun findRootOfTrust(elements: List<TlvElement>): ByteArray? {
-        for (element in elements) {
-            val isContextClass = element.tag and CONTEXT_CLASS_MASK == CONTEXT_CLASS_VALUE
-            val tagNumber = element.tag and TAG_NUMBER_MASK
-            if (isContextClass && tagNumber >= ROOT_OF_TRUST_MINIMUM_TAG)
-                return element.value
+    private fun findRootOfTrustInAuthorizationList(data: ByteArray): ByteArray? {
+        val innerData = unwrapSequence(data)
+        var offset = 0
+
+        while (offset < innerData.size) {
+            val tagResult = readTag(innerData, offset)
+            offset = tagResult.nextOffset
+            if (offset >= innerData.size)
+                break
+
+            val length = readLength(innerData, offset)
+            offset += length.second
+            val valueEnd = (offset + length.first).coerceAtMost(innerData.size)
+
+            if (tagResult.tagNumber == ROOT_OF_TRUST_TAG)
+                return innerData.copyOfRange(offset, valueEnd)
+
+            offset = valueEnd
         }
         return null
+    }
+
+    private fun parseSequenceContent(data: ByteArray): List<TlvElement> {
+        val innerData = unwrapSequence(data)
+        return parseTlvElements(innerData, 0, innerData.size)
+    }
+
+    private fun unwrapSequence(data: ByteArray): ByteArray {
+        if (data.isEmpty())
+            return data
+        if (data[0].toInt() and BYTE_MASK == TAG_SEQUENCE) {
+            val length = readLength(data, 1)
+            val contentStart = 1 + length.second
+            return data.copyOfRange(contentStart, (contentStart + length.first).coerceAtMost(data.size))
+        }
+        return data
     }
 
     private fun parseTlvElements(
@@ -120,31 +155,41 @@ object Asn1Parser {
         val elements = mutableListOf<TlvElement>()
         var offset = start
         while (offset < end) {
-            val tag = data[offset].toInt() and BYTE_MASK
-            offset++
+            val tagResult = readTag(data, offset)
+            offset = tagResult.nextOffset
+            if (offset >= end)
+                break
+
             val length = readLength(data, offset)
             offset += length.second
-            val value = data.copyOfRange(offset, offset + length.first)
-            elements.add(TlvElement(tag, value))
-            offset += length.first
+            val valueEnd = (offset + length.first).coerceAtMost(end)
+            val value = data.copyOfRange(offset, valueEnd)
+            elements.add(TlvElement(tagResult.tagNumber, value))
+            offset = valueEnd
         }
         return elements
     }
 
-    private fun parseInnerSequenceElements(data: ByteArray): List<TlvElement> {
-        if (data.isEmpty())
-            return emptyList()
+    private fun readTag(
+        data: ByteArray,
+        offset: Int,
+    ): TagResult {
+        val firstByte = data[offset].toInt() and BYTE_MASK
+        val lowBits = firstByte and LONG_FORM_TAG_MARKER
 
-        var contentStart = 0
-        var contentEnd = data.size
+        if (lowBits != LONG_FORM_TAG_MARKER)
+            return TagResult(tagNumber = lowBits, nextOffset = offset + 1)
 
-        if (data[0].toInt() and BYTE_MASK == TAG_SEQUENCE) {
-            val length = readLength(data, 1)
-            contentStart = 1 + length.second
-            contentEnd = contentStart + length.first
+        var tagNumber = 0
+        var currentOffset = offset + 1
+        while (currentOffset < data.size) {
+            val byte = data[currentOffset].toInt() and BYTE_MASK
+            tagNumber = (tagNumber shl 7) or (byte and HIGH_TAG_VALUE_MASK)
+            currentOffset++
+            if (byte and HIGH_TAG_CONTINUATION_BIT == 0)
+                break
         }
-
-        return parseTlvElements(data, contentStart, contentEnd.coerceAtMost(data.size))
+        return TagResult(tagNumber = tagNumber, nextOffset = currentOffset)
     }
 
     private fun readLength(
@@ -175,5 +220,10 @@ object Asn1Parser {
     private class TlvElement(
         val tag: Int,
         val value: ByteArray,
+    )
+
+    private class TagResult(
+        val tagNumber: Int,
+        val nextOffset: Int,
     )
 }

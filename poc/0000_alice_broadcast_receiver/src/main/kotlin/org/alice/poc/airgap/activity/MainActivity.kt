@@ -1,4 +1,4 @@
-package org.alice.poc.airgap.composables
+package org.alice.poc.airgap.activity
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.alice.poc.airgap.composables.AirGapScreen
 import org.alice.poc.airgap.composables.theme.AirGapTheme
 import org.alice.poc.airgap.viewmodel.AirGapViewModel
 
