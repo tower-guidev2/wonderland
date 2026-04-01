@@ -1,0 +1,30 @@
+package org.alice.poc.airgap.domain
+
+enum class SensorName(
+    val displayLabel: String,
+    val severity: ViolationSeverity,
+) {
+    AIRPLANE_MODE("Airplane Mode", ViolationSeverity.HARD),
+    BLUETOOTH("Bluetooth", ViolationSeverity.HARD),
+    BLUETOOTH_LOW_ENERGY("Bluetooth Low Energy", ViolationSeverity.HARD),
+    NFC("NFC", ViolationSeverity.HARD),
+    SIM("SIM Card", ViolationSeverity.HARD),
+    WIFI("Wi-Fi", ViolationSeverity.HARD),
+    WIFI_DIRECT("Wi-Fi Direct", ViolationSeverity.HARD),
+    WIFI_AWARE("Wi-Fi Aware", ViolationSeverity.HARD),
+    NETWORK_INTERFACE("Network Interface", ViolationSeverity.HARD),
+    VPN("VPN", ViolationSeverity.HARD),
+    TETHERING("Tethering", ViolationSeverity.HARD),
+    WIFI_BACKGROUND_SCAN("Wi-Fi Background Scan", ViolationSeverity.HARD),
+    BLUETOOTH_BACKGROUND_SCAN("Bluetooth Background Scan", ViolationSeverity.HARD),
+    LOCATION("Location", ViolationSeverity.HARD),
+    DEVELOPER_OPTIONS("Developer Options", ViolationSeverity.HARD),
+    ADB("ADB", ViolationSeverity.HARD),
+    ADB_WIRELESS("ADB Wireless", ViolationSeverity.HARD),
+    ACCESSIBILITY_SERVICE("Accessibility Service", ViolationSeverity.HARD),
+    DISPLAY_MIRRORING("Display Mirroring", ViolationSeverity.HARD),
+    OEM_UNLOCK("OEM Unlock", ViolationSeverity.HARD),
+    DEVICE_INTEGRITY("Device Integrity", ViolationSeverity.HARD),
+    ATTESTATION("Hardware Attestation", ViolationSeverity.HARD),
+    USB_POWER("USB Power", ViolationSeverity.SOFT),
+}
