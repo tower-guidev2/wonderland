@@ -45,10 +45,6 @@ object SensorChecker {
     private const val SINGLE_DISPLAY_COUNT = 1
 
     private val KNOWN_PIXEL_CODENAMES = setOf(
-        "sunfish",
-        "bramble",
-        "redfin",
-        "barbet",
         "oriole",
         "raven",
         "bluejay",
@@ -64,6 +60,12 @@ object SensorChecker {
         "caiman",
         "komodo",
         "comet",
+        "tegu",
+        "frankel",
+        "blazer",
+        "mustang",
+        "rango",
+        "stallion",
     )
 
     private const val ATTESTATION_EXTENSION_OID = "1.3.6.1.4.1.11129.2.1.17"
