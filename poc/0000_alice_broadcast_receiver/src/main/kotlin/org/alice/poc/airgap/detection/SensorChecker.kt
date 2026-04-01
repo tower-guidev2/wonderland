@@ -45,6 +45,10 @@ object SensorChecker {
     private const val SINGLE_DISPLAY_COUNT = 1
 
     private val KNOWN_PIXEL_CODENAMES = setOf(
+        "sunfish",
+        "bramble",
+        "redfin",
+        "barbet",
         "oriole",
         "raven",
         "bluejay",
@@ -69,6 +73,8 @@ object SensorChecker {
     private const val ELLIPTIC_CURVE_NAME = "secp256r1"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val ATTESTATION_KEY_ALIAS_PREFIX = "airgap_attestation_"
+    private const val ACTION_USB_STATE = "android.hardware.usb.action.USB_STATE"
+    private const val USB_CONNECTED_EXTRA = "connected"
 
     fun checkAll(context: Context): List<SensorStatus> = SensorName.entries.map { sensorName ->
         val result = checkSensor(context, sensorName)
@@ -388,9 +394,17 @@ object SensorChecker {
         )
         val pluggedState = batteryIntent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, SETTING_DISABLED)
             ?: SETTING_DISABLED
-        val isUsbPlugged = pluggedState == BatteryManager.BATTERY_PLUGGED_USB
+        val isUsbCharging = pluggedState == BatteryManager.BATTERY_PLUGGED_USB
 
-        return if (isUsbPlugged.not())
+        val usbStateIntent = context.registerReceiver(
+            null,
+            IntentFilter(ACTION_USB_STATE),
+        )
+        val isUsbDataConnected = usbStateIntent?.getBooleanExtra(USB_CONNECTED_EXTRA, false) ?: false
+
+        val isUsbConnected = isUsbCharging || isUsbDataConnected
+
+        return if (isUsbConnected.not())
             Either.Right("Not connected")
         else if (org.alice.poc.airgap.BuildConfig.DEBUG)
             Either.Right("Connected (debug — ignored)")
