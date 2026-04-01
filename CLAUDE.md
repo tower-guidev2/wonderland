@@ -48,6 +48,7 @@ Full design: `docs/design.md`. **Read it before any architectural or protocol de
 | `/mc-gradle` | Gradle build, modules, version catalog, ProGuard, NDK |
 | `/mc-writing` | Technical writing and documentation standard |
 | `/mc-design` | Compose theme, Material3, Alice/Bob design system — Rolls Royce standard |
+| `/mc-quality` | Code quality & style — non-negotiable rules for every .kt file |
 
 ---
 
@@ -62,6 +63,7 @@ From `docs/design.md` Section 9:
 
 ## Rules — Loaded On Demand
 
+@docs/rules/quality.md
 @docs/rules/naming.md
 @docs/rules/architecture.md
 @docs/rules/build.md

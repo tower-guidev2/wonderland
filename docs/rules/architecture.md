@@ -2,41 +2,9 @@
 
 ---
 
-## Module Map
+## Module Structure
 
-```
-wonderland/
-├── core/
-│   ├── protocol/       — CBOR schemas, type/version bytes, all QR types
-│   ├── cryptography/   — IVaultCryptographyEngine + VaultCryptographyEngine
-│   │                     entropy pool, BouncyCastle wrappers, Double Ratchet, X3DH
-│   ├── qr/             — ZXing encode/decode wrapper
-│   ├── common/         — base-37, padding, utilities
-│   └── testfixtures/   — shared test fakes, data builders, test utilities
-│
-├── alice/              — Air-gapped crypto vault (minSdk 33)
-│   ├── core:surveillance_api/ — pure Kotlin domain types (IAirGapSurveillance, AirGapViolation, AirGapStatus)
-│   ├── core:surveillance/    — Android implementation (BroadcastReceiver, NetworkCallback, WorkManager, Koin)
-│   ├── core:ui/              — Alice Compose theme (feminine, Rolls Royce quality)
-│   ├── app/
-│   ├── feature:contacts/
-│   ├── feature:keygen/
-│   ├── feature:messaging/
-│   ├── feature:pairing/
-│   ├── feature:scanner/
-│   ├── feature:settings/
-│   └── feature:delivery/     — tentative
-│
-└── bob/                — Online courier (minSdk 26)
-    ├── core:ui/        — Bob Compose theme (masculine, same font family as Alice)
-    ├── app/
-    ├── feature:scanner/
-    ├── feature:contacts/
-    ├── feature:delivery/
-    ├── feature:receive/
-    ├── feature:pairing/
-    └── feature:settings/
-```
+Single source of truth: [`docs/module-structure.md`](../module-structure.md). Do not duplicate here.
 
 ---
 
