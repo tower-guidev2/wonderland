@@ -1,7 +1,8 @@
+@file:Suppress("SpellCheckingInspection")
+
 package org.alice.poc.airgap.detection
 
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -16,21 +17,24 @@ import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import android.os.Build
 import android.provider.Settings
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import android.telephony.TelephonyManager
 import android.view.accessibility.AccessibilityManager
 import arrow.core.Either
 import org.alice.poc.airgap.domain.SensorName
 import org.alice.poc.airgap.domain.SensorStatus
+import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import java.security.spec.ECGenParameterSpec
+import java.util.concurrent.CancellationException
 
 object SensorChecker {
 
-    private const val SETTING_AIRPLANE_MODE = "airplane_mode_on"
-    private const val SETTING_BLUETOOTH = "bluetooth_on"
-    private const val SETTING_WIFI = "wifi_on"
     private const val SETTING_BLE_SCAN_ALWAYS = "ble_scan_always_enabled"
-    private const val SETTING_ADB = "adb_enabled"
     private const val SETTING_ADB_WIRELESS = "adb_wifi_enabled"
-    private const val SETTING_DEVELOPER_OPTIONS = "development_settings_enabled"
     private const val SETTING_OEM_UNLOCK = "oem_unlock_allowed"
 
     private const val SETTING_ENABLED = 1
@@ -38,7 +42,6 @@ object SensorChecker {
 
     private const val EXPECTED_MANUFACTURER = "Google"
     private const val EXPECTED_BRAND = "google"
-    private const val MINIMUM_SDK_VERSION = 33
     private const val SINGLE_DISPLAY_COUNT = 1
 
     private val KNOWN_PIXEL_CODENAMES = setOf(
@@ -58,6 +61,14 @@ object SensorChecker {
         "komodo",
         "comet",
     )
+
+    private const val ATTESTATION_EXTENSION_OID = "1.3.6.1.4.1.11129.2.1.17"
+    private const val STRONGBOX_SECURITY_LEVEL = 2
+    private const val VERIFIED_BOOT_SELF_SIGNED = 1
+    private const val ATTESTATION_CHALLENGE_SIZE = 32
+    private const val ELLIPTIC_CURVE_NAME = "secp256r1"
+    private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
+    private const val ATTESTATION_KEY_ALIAS_PREFIX = "airgap_attestation_"
 
     fun checkAll(context: Context): List<SensorStatus> = SensorName.entries.map { sensorName ->
         val result = checkSensor(context, sensorName)
@@ -98,7 +109,7 @@ object SensorChecker {
     }
 
     private fun checkAirplaneMode(context: Context): Either<String, String> {
-        val value = readGlobalSetting(context, SETTING_AIRPLANE_MODE)
+        val value = readGlobalSetting(context, Settings.Global.AIRPLANE_MODE_ON)
         return if (value == SETTING_ENABLED)
             Either.Right("Enabled")
         else
@@ -106,7 +117,7 @@ object SensorChecker {
     }
 
     private fun checkBluetooth(context: Context): Either<String, String> {
-        val value = readGlobalSetting(context, SETTING_BLUETOOTH)
+        val value = readGlobalSetting(context, Settings.Global.BLUETOOTH_ON)
         return if (value == SETTING_DISABLED)
             Either.Right("Disabled")
         else
@@ -144,7 +155,7 @@ object SensorChecker {
     }
 
     private fun checkWifi(context: Context): Either<String, String> {
-        val value = readGlobalSetting(context, SETTING_WIFI)
+        val value = readGlobalSetting(context, Settings.Global.WIFI_ON)
         return if (value == SETTING_DISABLED)
             Either.Right("Disabled")
         else
@@ -152,7 +163,7 @@ object SensorChecker {
     }
 
     private fun checkWifiDirect(context: Context): Either<String, String> {
-        val wifiValue = readGlobalSetting(context, SETTING_WIFI)
+        val wifiValue = readGlobalSetting(context, Settings.Global.WIFI_ON)
         return if (wifiValue == SETTING_DISABLED)
             Either.Right("Disabled (Wi-Fi off)")
         else
@@ -236,7 +247,7 @@ object SensorChecker {
     }
 
     private fun checkDeveloperOptions(context: Context): Either<String, String> {
-        val value = readGlobalSetting(context, SETTING_DEVELOPER_OPTIONS)
+        val value = readGlobalSetting(context, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED)
         return if (value == SETTING_DISABLED)
             Either.Right("Disabled")
         else
@@ -244,7 +255,7 @@ object SensorChecker {
     }
 
     private fun checkAdb(context: Context): Either<String, String> {
-        val value = readGlobalSetting(context, SETTING_ADB)
+        val value = readGlobalSetting(context, Settings.Global.ADB_ENABLED)
         return if (value == SETTING_DISABLED)
             Either.Right("Disabled")
         else
@@ -296,8 +307,6 @@ object SensorChecker {
             failures.add("brand: ${Build.BRAND}")
         if (KNOWN_PIXEL_CODENAMES.contains(Build.DEVICE).not())
             failures.add("device: ${Build.DEVICE}")
-        if (Build.VERSION.SDK_INT < MINIMUM_SDK_VERSION)
-            failures.add("SDK: ${Build.VERSION.SDK_INT}")
 
         return if (failures.isEmpty())
             Either.Right("Google Pixel (${Build.DEVICE}), SDK ${Build.VERSION.SDK_INT}")
@@ -310,7 +319,7 @@ object SensorChecker {
             performStrongBoxAttestation()
         }.fold(
             ifLeft = { throwable ->
-                if (throwable is java.util.concurrent.CancellationException)
+                if (throwable is CancellationException)
                     throw throwable
                 Either.Left("Attestation failed: ${throwable.message}")
             },
@@ -318,25 +327,25 @@ object SensorChecker {
         )
 
     private fun performStrongBoxAttestation(): Either<String, String> {
-        val keyStore = java.security.KeyStore.getInstance("AndroidKeyStore")
+        val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER)
         keyStore.load(null)
 
-        val alias = "airgap_attestation_${System.nanoTime()}"
-        val challenge = java.security.SecureRandom().let { random ->
+        val alias = "$ATTESTATION_KEY_ALIAS_PREFIX${System.nanoTime()}"
+        val challenge = SecureRandom().let { random ->
             ByteArray(ATTESTATION_CHALLENGE_SIZE).also { random.nextBytes(it) }
         }
 
-        val keyPairGenerator = java.security.KeyPairGenerator.getInstance(
-            android.security.keystore.KeyProperties.KEY_ALGORITHM_EC,
-            "AndroidKeyStore",
+        val keyPairGenerator = KeyPairGenerator.getInstance(
+            KeyProperties.KEY_ALGORITHM_EC,
+            KEYSTORE_PROVIDER,
         )
 
-        val parameterSpec = android.security.keystore.KeyGenParameterSpec.Builder(
+        val parameterSpec = KeyGenParameterSpec.Builder(
             alias,
-            android.security.keystore.KeyProperties.PURPOSE_SIGN,
+            KeyProperties.PURPOSE_SIGN,
         )
-            .setAlgorithmParameterSpec(java.security.spec.ECGenParameterSpec("secp256r1"))
-            .setDigests(android.security.keystore.KeyProperties.DIGEST_SHA256)
+            .setAlgorithmParameterSpec(ECGenParameterSpec(ELLIPTIC_CURVE_NAME))
+            .setDigests(KeyProperties.DIGEST_SHA256)
             .setAttestationChallenge(challenge)
             .setIsStrongBoxBacked(true)
             .build()
@@ -348,12 +357,12 @@ object SensorChecker {
         if (certificateChain == null || certificateChain.isEmpty())
             return Either.Left("No certificate chain")
 
-        val attestationCertificate = certificateChain[0] as java.security.cert.X509Certificate
+        val attestationCertificate = certificateChain[0] as X509Certificate
         val attestationExtension = attestationCertificate.getExtensionValue(ATTESTATION_EXTENSION_OID)
             ?: return Either.Left("No attestation extension")
 
         val failures = mutableListOf<String>()
-        val extensionData = parseAttestationExtension(attestationExtension)
+        val extensionData = parseAttestationExtension(attestationExtension, challenge)
 
         if (extensionData.isStrongBox.not())
             failures.add("not StrongBox-backed")
@@ -361,7 +370,7 @@ object SensorChecker {
             failures.add("bootloader unlocked")
         if (extensionData.isVerifiedBootSelfSigned.not())
             failures.add("not self-signed boot (not GrapheneOS)")
-        if (extensionData.challengeMatches(challenge).not())
+        if (extensionData.isChallengeValid.not())
             failures.add("challenge mismatch")
 
         keyStore.deleteEntry(alias)
@@ -394,29 +403,24 @@ object SensorChecker {
         name: String,
     ): Int = Settings.Global.getInt(context.contentResolver, name, SETTING_DISABLED)
 
-    private fun parseAttestationExtension(extensionBytes: ByteArray): AttestationData {
+    private fun parseAttestationExtension(
+        extensionBytes: ByteArray,
+        expectedChallenge: ByteArray,
+    ): AttestationResult {
         val octetString = Asn1Parser.parseOctetString(extensionBytes)
         val sequence = Asn1Parser.parseSequence(octetString)
-        return AttestationData(
+        return AttestationResult(
             isStrongBox = sequence.attestationSecurityLevel == STRONGBOX_SECURITY_LEVEL,
             isDeviceLocked = sequence.isDeviceLocked,
             isVerifiedBootSelfSigned = sequence.verifiedBootState == VERIFIED_BOOT_SELF_SIGNED,
-            attestationChallenge = sequence.attestationChallenge,
+            isChallengeValid = sequence.attestationChallenge.contentEquals(expectedChallenge),
         )
     }
 
-    private data class AttestationData(
+    private class AttestationResult(
         val isStrongBox: Boolean,
         val isDeviceLocked: Boolean,
         val isVerifiedBootSelfSigned: Boolean,
-        val attestationChallenge: ByteArray,
-    ) {
-        fun challengeMatches(expected: ByteArray): Boolean =
-            attestationChallenge.contentEquals(expected)
-    }
-
-    private const val ATTESTATION_EXTENSION_OID = "1.3.6.1.4.1.11129.2.1.17"
-    private const val STRONGBOX_SECURITY_LEVEL = 2
-    private const val VERIFIED_BOOT_SELF_SIGNED = 1
-    private const val ATTESTATION_CHALLENGE_SIZE = 32
+        val isChallengeValid: Boolean,
+    )
 }

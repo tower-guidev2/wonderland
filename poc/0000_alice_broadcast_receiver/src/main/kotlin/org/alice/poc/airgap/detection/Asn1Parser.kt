@@ -1,11 +1,30 @@
 package org.alice.poc.airgap.detection
 
-data class KeyDescription(
+class KeyDescription(
     val attestationSecurityLevel: Int,
     val attestationChallenge: ByteArray,
     val isDeviceLocked: Boolean,
     val verifiedBootState: Int,
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other)
+            return true
+        if (other is KeyDescription)
+            return attestationSecurityLevel == other.attestationSecurityLevel &&
+                attestationChallenge.contentEquals(other.attestationChallenge) &&
+                isDeviceLocked == other.isDeviceLocked &&
+                verifiedBootState == other.verifiedBootState
+        return false
+    }
+
+    override fun hashCode(): Int {
+        var result = attestationSecurityLevel
+        result = 31 * result + attestationChallenge.contentHashCode()
+        result = 31 * result + isDeviceLocked.hashCode()
+        result = 31 * result + verifiedBootState
+        return result
+    }
+}
 
 object KeyDescriptionDefaults {
     private const val UNKNOWN_LEVEL = -1
@@ -153,7 +172,7 @@ object Asn1Parser {
         return result
     }
 
-    private data class TlvElement(
+    private class TlvElement(
         val tag: Int,
         val value: ByteArray,
     )

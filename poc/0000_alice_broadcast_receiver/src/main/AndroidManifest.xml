@@ -15,11 +15,12 @@
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
+        android:icon="@mipmap/ic_launcher"
         android:label="POC 0000 Air-Gap"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".composables.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

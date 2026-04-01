@@ -1,4 +1,4 @@
-package org.alice.poc.airgap.ui
+package org.alice.poc.airgap.viewmodel
 
 import android.app.Application
 import android.content.BroadcastReceiver
@@ -12,6 +12,7 @@ import org.alice.poc.airgap.detection.AirGapBroadcastReceiver
 import org.alice.poc.airgap.detection.SensorChecker
 import org.alice.poc.airgap.domain.AirGapScreenState
 import org.alice.poc.airgap.domain.AirGapScreenStateDefaults
+import java.util.concurrent.CancellationException
 
 class AirGapViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -38,7 +39,7 @@ class AirGapViewModel(application: Application) : AndroidViewModel(application) 
                 )
             }
         } catch (exception: Exception) {
-            if (exception is java.util.concurrent.CancellationException)
+            if (exception is CancellationException)
                 throw exception
             mutableState.update { current ->
                 current.copy(errorMessage = "Sensor check failed: ${exception.message}")

@@ -1,4 +1,4 @@
-package org.alice.poc.airgap.ui
+package org.alice.poc.airgap.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,14 +17,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.alice.poc.airgap.composables.theme.AirGapColors
+import org.alice.poc.airgap.composables.theme.AirGapTheme
+import org.alice.poc.airgap.domain.SensorName
 import org.alice.poc.airgap.domain.SensorStatus
 import org.alice.poc.airgap.domain.ViolationSeverity
-import org.alice.poc.airgap.ui.theme.AirGapColors
 
 private val INDICATOR_SIZE = 12.dp
 private val ITEM_PADDING = 16.dp
-private val INDICATOR_PADDING = 12.dp
+private val INDICATOR_SPACING = 12.dp
 private val BADGE_HORIZONTAL_PADDING = 8.dp
 private val BADGE_VERTICAL_PADDING = 2.dp
 private val BADGE_CORNER_RADIUS = 4.dp
@@ -46,7 +49,7 @@ internal fun SensorListItem(
             .background(backgroundColor)
             .padding(ITEM_PADDING),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(INDICATOR_PADDING),
+        horizontalArrangement = Arrangement.spacedBy(INDICATOR_SPACING),
     ) {
         Box(
             modifier = Modifier
@@ -55,7 +58,7 @@ internal fun SensorListItem(
                 .background(indicatorColor),
         )
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1.0F)) {
             Text(
                 text = sensorStatus.sensorName.displayLabel,
                 style = MaterialTheme.typography.bodyLarge,
@@ -103,3 +106,114 @@ private fun resolveIndicatorColor(sensorStatus: SensorStatus): Color =
             ViolationSeverity.HARD -> AirGapColors.HardViolation
             ViolationSeverity.SOFT -> AirGapColors.SoftViolation
         }
+
+@Preview(
+    name = "Safe Sensor — Light",
+    showBackground = true,
+    device = "id:pixel_6",
+)
+@Composable
+private fun PreviewSensorListItemSafeLight() {
+    AirGapTheme {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.AIRPLANE_MODE,
+                isViolating = false,
+                detail = "Enabled",
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Safe Sensor — Dark",
+    showBackground = true,
+    device = "id:pixel_6",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun PreviewSensorListItemSafeDark() {
+    AirGapTheme(isDarkTheme = true) {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.AIRPLANE_MODE,
+                isViolating = false,
+                detail = "Enabled",
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Hard Violation — Light",
+    showBackground = true,
+    device = "id:pixel_6",
+)
+@Composable
+private fun PreviewSensorListItemHardViolationLight() {
+    AirGapTheme {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.BLUETOOTH,
+                isViolating = true,
+                detail = "Enabled",
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Hard Violation — Dark",
+    showBackground = true,
+    device = "id:pixel_6",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun PreviewSensorListItemHardViolationDark() {
+    AirGapTheme(isDarkTheme = true) {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.BLUETOOTH,
+                isViolating = true,
+                detail = "Enabled",
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Soft Violation — Light",
+    showBackground = true,
+    device = "id:pixel_6",
+)
+@Composable
+private fun PreviewSensorListItemSoftViolationLight() {
+    AirGapTheme {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.USB_POWER,
+                isViolating = true,
+                detail = "USB connected",
+            ),
+        )
+    }
+}
+
+@Preview(
+    name = "Soft Violation — Dark",
+    showBackground = true,
+    device = "id:pixel_6",
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun PreviewSensorListItemSoftViolationDark() {
+    AirGapTheme(isDarkTheme = true) {
+        SensorListItem(
+            sensorStatus = SensorStatus(
+                sensorName = SensorName.USB_POWER,
+                isViolating = true,
+                detail = "USB connected",
+            ),
+        )
+    }
+}

@@ -1,4 +1,4 @@
-package org.alice.poc.airgap.ui.theme
+package org.alice.poc.airgap.composables.theme
 
 import androidx.compose.ui.graphics.Color
 
