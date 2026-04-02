@@ -1,6 +1,6 @@
 @file:Suppress("SpellCheckingInspection")
 
-package org.alice.poc.airgap.detection
+package org.alice.poc.airgap.detection.integrity
 
 class KeyDescription(
     val attestationSecurityLevel: Int,

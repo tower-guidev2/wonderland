@@ -1,0 +1,90 @@
+package org.alice.poc.airgap.domain
+
+enum class SurfaceName(
+    val displayLabel: String,
+    val severity: ViolationSeverity,
+    val validator: ValidatorGroup,
+) {
+    AIRPLANE_MODE("Airplane Mode", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    BLUETOOTH("Bluetooth", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    BLUETOOTH_LOW_ENERGY("Bluetooth Low Energy", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    BLUETOOTH_BACKGROUND_SCAN("Bluetooth Background Scan", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    NFC("NFC", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    WIFI("Wi-Fi", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    WIFI_DIRECT("Wi-Fi Direct", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    WIFI_AWARE("Wi-Fi Aware", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    WIFI_BACKGROUND_SCAN("Wi-Fi Background Scan", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    UWB("UWB", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    SATELLITE("Satellite", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    THREAD("Thread Radio", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    SIM("SIM Card", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    ESIM_PROFILES("eSIM Profiles", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    ESIM_TOGGLE("eSIM Toggle", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    NETWORK_INTERFACE("Network Interface", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+
+    LOCATION("Location", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    SUPL("SUPL", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    PSDS("PSDS", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+
+    USB_DATA("USB Data", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    USB_POWER("USB Power", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+
+    SYSTEM_UPDATER("System Updater", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    PRIVATE_DNS("Private DNS", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    MASTER_SYNC("Master Sync", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    HOTSPOT("Hotspot / Tethering", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    PRINT_SERVICES("Print Services", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    EMERGENCY_SOS("Emergency SOS", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    EMERGENCY_ALERTS("Emergency Alerts", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+
+    ACCOUNTS("Accounts", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    AUTOFILL("Autofill Service", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    AUTO_SYNC("Auto Sync", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+
+    DEVICE_ADMIN("Device Admin", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    TRUST_AGENTS("Trust Agents", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    DEVICE_ENCRYPTED("Device Encrypted", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    LOCK_SCREEN_NOTIFICATIONS("Lock Screen Notifications", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    LOCK_SCREEN_SENSITIVE("Lock Screen Sensitive Content", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    LOCK_SCREEN_MEDIA("Lock Screen Media", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    APP_PINNING("App Pinning", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+
+    DEVELOPER_OPTIONS("Developer Options", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    ADB("ADB", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    ADB_WIRELESS("ADB Wireless", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    OEM_UNLOCK("OEM Unlock", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+
+    HEALTH_CONNECT("Health Connect", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    SENSOR_DEFAULT("Default Sensor Permission", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    CRASH_NOTIFICATIONS("Crash Notifications", ViolationSeverity.SOFT, ValidatorGroup.AIR_GAP),
+    FLAG_SECURE("FLAG_SECURE", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    VPN("VPN", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+    DISPLAY_MIRRORING("Display Mirroring", ViolationSeverity.HARD, ValidatorGroup.AIR_GAP),
+
+    ACCESSIBILITY_MASTER("Accessibility Master Toggle", ViolationSeverity.HARD, ValidatorGroup.ACCESSIBILITY),
+    ACCESSIBILITY_ENABLED_STRING("Accessibility Enabled String", ViolationSeverity.HARD, ValidatorGroup.ACCESSIBILITY),
+    ACCESSIBILITY_SERVICE_LIST("Accessibility Service List", ViolationSeverity.HARD, ValidatorGroup.ACCESSIBILITY),
+
+    MAGNIFICATION("Magnification", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    COLOUR_INVERSION("Colour Inversion", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    COLOUR_CORRECTION("Colour Correction", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    HIGH_TEXT_CONTRAST("High Text Contrast", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    CAPTIONS("Captions", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    LIVE_CAPTIONS("Live Captions", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    FONT_SCALE("Font Scale", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    MONO_AUDIO("Mono Audio", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    TOUCH_EXPLORATION("Touch Exploration", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+
+    ACCESSIBILITY_SHORTCUT("Accessibility Shortcut", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+    ACCESSIBILITY_BUTTON("Accessibility Button Targets", ViolationSeverity.SOFT, ValidatorGroup.ACCESSIBILITY),
+
+    DEVICE_INTEGRITY("Device Integrity", ViolationSeverity.HARD, ValidatorGroup.INTEGRITY),
+    ATTESTATION("Hardware Attestation", ViolationSeverity.HARD, ValidatorGroup.INTEGRITY),
+
+    PTRACE("Ptrace Protection", ViolationSeverity.HARD, ValidatorGroup.EXPLOIT),
+    DEX_MEMORY("DEX from Memory", ViolationSeverity.HARD, ValidatorGroup.EXPLOIT),
+    DEX_STORAGE("DEX from Storage", ViolationSeverity.HARD, ValidatorGroup.EXPLOIT),
+    ADDRESS_SPACE("48-bit Address Space", ViolationSeverity.SOFT, ValidatorGroup.EXPLOIT),
+    HARDENED_ALLOCATOR("Hardened Allocator", ViolationSeverity.SOFT, ValidatorGroup.EXPLOIT),
+    SECURE_SPAWNING("Secure App Spawning", ViolationSeverity.SOFT, ValidatorGroup.EXPLOIT),
+}

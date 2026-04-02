@@ -15,18 +15,21 @@ object AirGapBroadcastReceiver {
     private const val ACTION_SIM_STATE_CHANGED = "android.intent.action.SIM_STATE_CHANGED"
     private const val ACTION_TETHER_STATE_CHANGED = "android.net.conn.TETHER_STATE_CHANGED"
     private const val ACTION_USB_STATE = "android.hardware.usb.action.USB_STATE"
+    private const val ACTION_SUBSCRIPTION_CHANGED = "android.telephony.action.SUBSCRIPTION_CHANGED"
 
     fun createIntentFilter(): IntentFilter = IntentFilter().also { filter ->
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
         filter.addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
         filter.addAction(ACTION_SIM_STATE_CHANGED)
+        filter.addAction(ACTION_SUBSCRIPTION_CHANGED)
         filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION)
+        filter.addAction(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED)
         filter.addAction(ACTION_TETHER_STATE_CHANGED)
         filter.addAction(ACTION_USB_STATE)
         filter.addAction(Intent.ACTION_POWER_CONNECTED)
-        filter.addAction(WifiAwareManager.ACTION_WIFI_AWARE_STATE_CHANGED)
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED)
     }
 
     fun createReceiver(onBroadcastReceived: () -> Unit): BroadcastReceiver =

@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
 
                 AirGapScreen(
                     state = state,
-                    onRefreshRequested = { airGapViewModel.refreshSensorStatuses() },
+                    onRefreshRequested = { airGapViewModel.refreshAll() },
                 )
             }
         }
