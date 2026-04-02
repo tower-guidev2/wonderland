@@ -168,6 +168,7 @@ object RadioChecks {
             CheckResult(SurfaceName.ESIM_PROFILES, Either.Left(ViolationDetail("${activeSubscriptions.size} active profile(s)")))
     }
 
+    @Suppress("UnusedParameter")
     private fun checkEsimToggle(context: Context): CheckResult =
         CheckResult(SurfaceName.ESIM_TOGGLE, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 

@@ -77,6 +77,7 @@ object SoftwareServiceChecks {
             CheckResult(SurfaceName.HOTSPOT, Either.Left(ViolationDetail("Tethering detected")))
     }
 
+    @Suppress("UnusedParameter")
     private fun checkPrintServices(context: Context): CheckResult =
         CheckResult(SurfaceName.PRINT_SERVICES, Either.Right(SafeDetail("API restricted — verify manually in settings")))
 
@@ -88,6 +89,7 @@ object SoftwareServiceChecks {
             CheckResult(SurfaceName.EMERGENCY_SOS, Either.Left(ViolationDetail("Enabled")))
     }
 
+    @Suppress("UnusedParameter")
     private fun checkEmergencyAlerts(context: Context): CheckResult =
         CheckResult(SurfaceName.EMERGENCY_ALERTS, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 }

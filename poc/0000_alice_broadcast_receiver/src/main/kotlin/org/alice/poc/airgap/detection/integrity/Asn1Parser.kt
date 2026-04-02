@@ -218,7 +218,7 @@ object Asn1Parser {
     }
 
     private class TlvElement(
-        val tag: Int,
+        @Suppress("UnusedParameter") val tag: Int,
         val value: ByteArray,
     )
 

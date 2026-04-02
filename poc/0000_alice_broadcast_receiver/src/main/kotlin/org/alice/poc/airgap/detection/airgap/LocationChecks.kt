@@ -24,9 +24,11 @@ object LocationChecks {
             CheckResult(SurfaceName.LOCATION, Either.Left(ViolationDetail("Enabled")))
     }
 
+    @Suppress("UnusedParameter")
     private fun checkSupl(context: Context): CheckResult =
         CheckResult(SurfaceName.SUPL, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 
+    @Suppress("UnusedParameter")
     private fun checkPsds(context: Context): CheckResult =
         CheckResult(SurfaceName.PSDS, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 }

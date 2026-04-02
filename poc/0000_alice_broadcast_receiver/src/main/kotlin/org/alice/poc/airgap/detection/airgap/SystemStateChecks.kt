@@ -40,12 +40,15 @@ object SystemStateChecks {
             CheckResult(SurfaceName.HEALTH_CONNECT, Either.Left(ViolationDetail("Enabled (state: $enabledSetting)")))
     }
 
+    @Suppress("UnusedParameter")
     private fun checkSensorDefault(context: Context): CheckResult =
         CheckResult(SurfaceName.SENSOR_DEFAULT, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 
+    @Suppress("UnusedParameter")
     private fun checkCrashNotifications(context: Context): CheckResult =
         CheckResult(SurfaceName.CRASH_NOTIFICATIONS, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 
+    @Suppress("UnusedParameter")
     private fun checkFlagSecure(context: Context): CheckResult =
         CheckResult(SurfaceName.FLAG_SECURE, Either.Right(SafeDetail("Self-enforcement — verified at Activity level")))
 

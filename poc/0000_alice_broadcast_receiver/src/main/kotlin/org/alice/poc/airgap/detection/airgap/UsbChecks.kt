@@ -21,6 +21,7 @@ object UsbChecks {
         checkUsbPower(context),
     )
 
+    @Suppress("UnusedParameter")
     private fun checkUsbData(context: Context): CheckResult =
         CheckResult(SurfaceName.USB_DATA, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 

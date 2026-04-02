@@ -88,7 +88,7 @@ class AirGapViewModel(application: Application) : AndroidViewModel(application) 
         super.onCleared()
         try {
             getApplication<Application>().unregisterReceiver(receiver)
-        } catch (ignored: IllegalArgumentException) {
+        } catch (_: IllegalArgumentException) {
         }
         getApplication<Application>().contentResolver.unregisterContentObserver(accessibilityObserver)
     }

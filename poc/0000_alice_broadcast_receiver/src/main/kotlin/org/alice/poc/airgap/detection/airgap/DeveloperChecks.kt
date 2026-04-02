@@ -12,7 +12,6 @@ object DeveloperChecks {
 
     private const val SETTING_ADB_WIRELESS = "adb_wifi_enabled"
     private const val SETTING_OEM_UNLOCK = "oem_unlock_allowed"
-    private const val SETTING_ENABLED = 1
     private const val SETTING_DISABLED = 0
 
     fun checkAll(context: Context): List<CheckResult> = listOf(
