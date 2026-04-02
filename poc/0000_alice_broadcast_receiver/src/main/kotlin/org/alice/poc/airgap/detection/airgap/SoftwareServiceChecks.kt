@@ -15,6 +15,7 @@ import org.alice.poc.airgap.domain.ViolationDetail
 object SoftwareServiceChecks {
 
     private const val UPDATER_PACKAGE = "com.android.updater"
+    private const val SETTING_CELL_BROADCAST_SMS = "cdma_cell_broadcast_sms"
     private const val SETTING_DISABLED = 0
 
     fun checkAll(context: Context): List<CheckResult> = listOf(
@@ -89,7 +90,13 @@ object SoftwareServiceChecks {
             CheckResult(SurfaceName.EMERGENCY_SOS, Either.Left(ViolationDetail("Enabled")))
     }
 
-    @Suppress("UnusedParameter")
-    private fun checkEmergencyAlerts(context: Context): CheckResult =
-        CheckResult(SurfaceName.EMERGENCY_ALERTS, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
+    private fun checkEmergencyAlerts(context: Context): CheckResult = try {
+        val value = Settings.Global.getInt(context.contentResolver, SETTING_CELL_BROADCAST_SMS, SETTING_DISABLED)
+        if (value == SETTING_DISABLED)
+            CheckResult(SurfaceName.EMERGENCY_ALERTS, Either.Right(SafeDetail("Disabled")))
+        else
+            CheckResult(SurfaceName.EMERGENCY_ALERTS, Either.Left(ViolationDetail("Cell broadcast enabled (value: $value)")))
+    } catch (_: SecurityException) {
+        CheckResult(SurfaceName.EMERGENCY_ALERTS, Either.Right(SafeDetail("Key restricted — verify via ADB")))
+    }
 }

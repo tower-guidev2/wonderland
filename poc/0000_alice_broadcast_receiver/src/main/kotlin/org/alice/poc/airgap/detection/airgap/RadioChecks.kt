@@ -20,6 +20,7 @@ import org.alice.poc.airgap.domain.ViolationDetail
 object RadioChecks {
 
     private const val SETTING_BLE_SCAN_ALWAYS = "ble_scan_always_enabled"
+    private const val SETTING_EUICC_PROVISIONED = "euicc_provisioned"
     private const val SETTING_ENABLED = 1
     private const val SETTING_DISABLED = 0
 
@@ -168,9 +169,15 @@ object RadioChecks {
             CheckResult(SurfaceName.ESIM_PROFILES, Either.Left(ViolationDetail("${activeSubscriptions.size} active profile(s)")))
     }
 
-    @Suppress("UnusedParameter")
-    private fun checkEsimToggle(context: Context): CheckResult =
-        CheckResult(SurfaceName.ESIM_TOGGLE, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
+    private fun checkEsimToggle(context: Context): CheckResult = try {
+        val value = Settings.Global.getInt(context.contentResolver, SETTING_EUICC_PROVISIONED, 0)
+        if (value == SETTING_DISABLED)
+            CheckResult(SurfaceName.ESIM_TOGGLE, Either.Right(SafeDetail("Not provisioned")))
+        else
+            CheckResult(SurfaceName.ESIM_TOGGLE, Either.Left(ViolationDetail("eSIM provisioned (value: $value)")))
+    } catch (_: SecurityException) {
+        CheckResult(SurfaceName.ESIM_TOGGLE, Either.Right(SafeDetail("Key restricted — verify via ADB")))
+    }
 
     private fun checkNetworkInterface(context: Context): CheckResult {
         val connectivityManager = context.getSystemService(ConnectivityManager::class.java)

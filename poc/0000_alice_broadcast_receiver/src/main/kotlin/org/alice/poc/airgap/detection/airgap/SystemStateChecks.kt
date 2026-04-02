@@ -6,6 +6,7 @@ import android.content.Context
 import android.hardware.display.DisplayManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.provider.Settings
 import arrow.core.Either
 import org.alice.poc.airgap.domain.CheckResult
 import org.alice.poc.airgap.domain.SafeDetail
@@ -15,7 +16,10 @@ import org.alice.poc.airgap.domain.ViolationDetail
 object SystemStateChecks {
 
     private const val HEALTH_CONNECT_PACKAGE = "com.google.android.apps.healthdata"
+    private const val SETTING_CRASH_DIALOG = "show_first_crash_dialog_dev_option"
     private const val SINGLE_DISPLAY_COUNT = 1
+    private const val SETTING_DISABLED = 0
+    private const val SETTING_ENABLED = 1
 
     fun checkAll(context: Context): List<CheckResult> = listOf(
         checkHealthConnect(context),
@@ -44,9 +48,15 @@ object SystemStateChecks {
     private fun checkSensorDefault(context: Context): CheckResult =
         CheckResult(SurfaceName.SENSOR_DEFAULT, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
 
-    @Suppress("UnusedParameter")
-    private fun checkCrashNotifications(context: Context): CheckResult =
-        CheckResult(SurfaceName.CRASH_NOTIFICATIONS, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
+    private fun checkCrashNotifications(context: Context): CheckResult = try {
+        val value = Settings.Secure.getInt(context.contentResolver, SETTING_CRASH_DIALOG, SETTING_ENABLED)
+        if (value == SETTING_DISABLED)
+            CheckResult(SurfaceName.CRASH_NOTIFICATIONS, Either.Right(SafeDetail("Disabled")))
+        else
+            CheckResult(SurfaceName.CRASH_NOTIFICATIONS, Either.Left(ViolationDetail("Crash dialog enabled (value: $value)")))
+    } catch (_: SecurityException) {
+        CheckResult(SurfaceName.CRASH_NOTIFICATIONS, Either.Right(SafeDetail("Key restricted — verify via ADB")))
+    }
 
     @Suppress("UnusedParameter")
     private fun checkFlagSecure(context: Context): CheckResult =

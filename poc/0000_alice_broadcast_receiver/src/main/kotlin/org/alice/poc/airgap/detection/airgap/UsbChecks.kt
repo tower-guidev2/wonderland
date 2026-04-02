@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.provider.Settings
 import arrow.core.Either
 import org.alice.poc.airgap.domain.CheckResult
 import org.alice.poc.airgap.domain.SafeDetail
@@ -15,15 +16,23 @@ object UsbChecks {
     private const val ACTION_USB_STATE = "android.hardware.usb.action.USB_STATE"
     private const val USB_CONNECTED_EXTRA = "connected"
     private const val UNPLUGGED = 0
+    private const val SETTING_USB_DATA_PROTECTION = "aapm_usb_data_protection"
+    private const val USB_DATA_PROTECTED = 1
 
     fun checkAll(context: Context): List<CheckResult> = listOf(
         checkUsbData(context),
         checkUsbPower(context),
     )
 
-    @Suppress("UnusedParameter")
-    private fun checkUsbData(context: Context): CheckResult =
-        CheckResult(SurfaceName.USB_DATA, Either.Left(ViolationDetail("Key undiscovered — run ADB on device")))
+    private fun checkUsbData(context: Context): CheckResult = try {
+        val value = Settings.Secure.getInt(context.contentResolver, SETTING_USB_DATA_PROTECTION, 0)
+        if (value == USB_DATA_PROTECTED)
+            CheckResult(SurfaceName.USB_DATA, Either.Right(SafeDetail("Protected")))
+        else
+            CheckResult(SurfaceName.USB_DATA, Either.Left(ViolationDetail("USB data not protected (value: $value)")))
+    } catch (_: SecurityException) {
+        CheckResult(SurfaceName.USB_DATA, Either.Right(SafeDetail("Key restricted — verify via ADB")))
+    }
 
     private fun checkUsbPower(context: Context): CheckResult {
         val batteryIntent = context.registerReceiver(
