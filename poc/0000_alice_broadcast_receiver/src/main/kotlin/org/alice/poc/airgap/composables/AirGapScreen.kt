@@ -16,8 +16,8 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -86,7 +86,7 @@ internal fun AirGapScreen(
                 ErrorBanner(message = state.errorMessage)
             }
 
-            TabRow(selectedTabIndex = pagerState.currentPage) {
+            ScrollableTabRow(selectedTabIndex = pagerState.currentPage, edgePadding = 0.dp) {
                 TAB_ORDER.forEachIndexed { index, group ->
                     val violationCount = state.violationCountForGroup(group)
                     val label = if (violationCount > 0)

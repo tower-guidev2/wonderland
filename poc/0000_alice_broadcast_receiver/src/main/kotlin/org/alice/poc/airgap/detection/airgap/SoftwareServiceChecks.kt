@@ -49,12 +49,14 @@ object SoftwareServiceChecks {
             CheckResult(SurfaceName.PRIVATE_DNS, Either.Left(ViolationDetail("Mode: $mode")))
     }
 
-    private fun checkMasterSync(): CheckResult {
+    private fun checkMasterSync(): CheckResult = try {
         val isSyncEnabled = ContentResolver.getMasterSyncAutomatically()
-        return if (isSyncEnabled.not())
+        if (isSyncEnabled.not())
             CheckResult(SurfaceName.MASTER_SYNC, Either.Right(SafeDetail("Off")))
         else
             CheckResult(SurfaceName.MASTER_SYNC, Either.Left(ViolationDetail("Enabled")))
+    } catch (exception: SecurityException) {
+        CheckResult(SurfaceName.MASTER_SYNC, Either.Right(SafeDetail("Permission denied (expected on GOS)")))
     }
 
     @Suppress("DEPRECATION")

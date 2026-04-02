@@ -34,11 +34,13 @@ object AccountChecks {
             CheckResult(SurfaceName.AUTOFILL, Either.Left(ViolationDetail("Service: $autofillService")))
     }
 
-    private fun checkAutoSync(): CheckResult {
+    private fun checkAutoSync(): CheckResult = try {
         val isSyncEnabled = ContentResolver.getMasterSyncAutomatically()
-        return if (isSyncEnabled.not())
+        if (isSyncEnabled.not())
             CheckResult(SurfaceName.AUTO_SYNC, Either.Right(SafeDetail("Off")))
         else
             CheckResult(SurfaceName.AUTO_SYNC, Either.Left(ViolationDetail("Enabled")))
+    } catch (exception: SecurityException) {
+        CheckResult(SurfaceName.AUTO_SYNC, Either.Right(SafeDetail("Permission denied (expected on GOS)")))
     }
 }
