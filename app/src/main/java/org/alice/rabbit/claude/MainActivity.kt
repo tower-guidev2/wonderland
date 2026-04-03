@@ -40,7 +40,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+@Suppress("UnusedPrivateMember") // Preview composables are invoked by Android Studio, not by code
+private fun GreetingPreview() {
     ClaudeTheme {
         Greeting("Android")
     }
