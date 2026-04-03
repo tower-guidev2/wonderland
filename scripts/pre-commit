@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running detekt..."
+./gradlew detekt --quiet
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "COMMIT BLOCKED: detekt violations found. Fix them before committing."
+    exit 1
+fi
