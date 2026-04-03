@@ -37,7 +37,7 @@ Zero-knowledge proofs for the Alice/Bob protocol.
 
 ---
 
-## Phase 0 Deliverable — Research Document
+## Phase 0 Deliverable — Research Document (BLOCKER: not yet delivered)
 
 Before writing any ZKP circuit code, produce a structured research document covering:
 1. Exact ZKP statements for each Priority 1 property with constraint count and proof size estimates

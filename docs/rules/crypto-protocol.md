@@ -7,7 +7,8 @@ Full spec: `docs/design.md` Section 7. This is a summary — the spec is authori
 ## Fundamental Rules
 
 - **All cryptography on Alice only.** Bob never sees plaintext or session keys.
-- **Pipeline (immutable):** Composition → Padding → Compression → Encryption → CBOR → QR
+- **Pipeline (immutable):** Message Assembly → Padding → Compression → Encryption → CBOR → QR
+  - "Message Assembly" = user plaintext + metadata assembled into the cleartext payload structure
 - **`IVaultCryptographyEngine`** is the single interface boundary for all cryptography.
   - Phase 1 = `VaultCryptographyEngine` (pure Kotlin + BouncyCastle)
   - Phase 2 = Rust VM via UniFFI. Swap is one Koin line.

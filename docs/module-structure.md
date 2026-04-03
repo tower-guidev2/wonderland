@@ -16,7 +16,8 @@ wonderland/
 │   │                         EntropyPool, BouncyCastle wrappers, Double Ratchet, X3DH
 │   ├── qr/                 — ZXing encode/decode wrapper
 │   ├── common/             — base-37 encoding, padding, utilities
-│   └── testfixtures/       — shared test fakes, data builders, canonical spec vectors
+│
+├── testfixtures/              — shared test fakes, data builders, canonical spec vectors
 │
 ├── alice/                  — Air-gapped crypto vault (minSdk 33, GrapheneOS)
 │   ├── app/
@@ -50,7 +51,7 @@ wonderland/
 alice/* and bob/*  → may depend on core/*
 core/*             → must not depend on alice or bob
 feature:X (impl)   → must not be depended on by any other feature
-:core:testfixtures → testImplementation scope only
+:testfixtures      → testImplementation scope only
 ```
 
 No circular dependencies. No upward dependencies from core to app.
@@ -94,6 +95,6 @@ Packages mirror the module hierarchy exactly:
 2. `core:cryptography` — IVaultCryptographyEngine and implementations
 3. `core:qr` — barcode scanner wrapper
 4. `core:common` — utilities
-5. `core:testfixtures` — test infrastructure
+5. `testfixtures` — test infrastructure
 6. `alice` app modules
 7. `bob` app modules

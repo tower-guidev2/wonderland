@@ -10,17 +10,13 @@ Locked decisions. Do not revisit, suggest alternatives, or silently revert to an
 - **No technology names in identifiers.** Never embed library, language, or platform names — `Kotlin`, `Rust`, `ZXing`, `Room`, `Koin`, `Bouncy`, `CBOR` — in any identifier. Name what the thing *does*, not what runs it. Exceptions require explicit documented justification.
 - **Interface prefix `I`.** Interfaces: `IFoo`. Primary implementation: `Foo`. Test fake: `FakeFoo`.
   - Example: `IVaultCryptographyEngine` → `VaultCryptographyEngine` → `FakeVaultCryptographyEngine`
-- **No `lateinit`. Ever.** Redesign for construction-time initialisation.
 - **No backtick function names. Ever.** Including in tests.
 - **No magic numbers or strings.** Extract to named constants.
 - **Short, sharp names.** Single words where possible. Max ~30 chars. Uncle Bob self-documenting.
 - **No plurals** unless the thing genuinely is a collection.
 - **Matching pairs and word families** — names in a set must share vocabulary.
 - **No negative-logic names.** Name what something *is*, not what it isn't.
-- **Prefer `==` over `!=`.** Structure `if/else` with the positive case first.
-- **Never use `!` for negation.** Use `.not()` instead.
-- **Single-expression `if` branches with no `{}` braces** — only when the branch is one line.
-- **Line width: 180 characters.** This overrides every external standard.
+- **Max ~30 chars** per identifier. Over 30 means the design is wrong, not the name.
 
 ---
 

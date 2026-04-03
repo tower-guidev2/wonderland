@@ -418,7 +418,7 @@ Step 8   Both Alices display the SAS Verification phrase.
 
 If the phrases do not match at Step 8, the engagement is aborted and all stored contact data for this attempt is discarded. The ceremony restarts from Step 1.
 
-The contact is usable but marked Unverified until Step 10 completes. Alice always displays the verification state of every contact. Alice never misrepresents an Unverified contact as Verified.
+The contact is usable but marked Unverified until Step 8 completes. Alice always displays the verification state of every contact. Alice never misrepresents an Unverified contact as Verified.
 
 ## The Refresh Ceremony
 
@@ -867,12 +867,12 @@ Each 11-bit value (range 0–2047) indexes into a 2,048-word EFF word list. The 
 - Break-in recovery is provided by the DH ratchet.
 - All private and ephemeral keys are zeroed in memory immediately after use.
 
-## The VaultCryptoEngine Interface
+## The IVaultCryptographyEngine Interface
 
 All cryptographic operations on Alice pass through a single interface. This boundary isolates cryptographic code from all application code. It enables Phase 1 (Kotlin) and Phase 2 (Rust via UniFFI) to be swapped with a single dependency injection change. No code outside this interface touches cryptographic primitives directly.
 
 ```kotlin
-interface VaultCryptoEngine {
+interface IVaultCryptographyEngine {
     fun generateIdentityKeypair(entropy: EntropyPool): IdentityKeypair
     fun generateKeyBundle(identity: IdentityKeypair, entropy: EntropyPool): KeyBundle
     fun initSession(bundle: KeyBundle, myIdentity: IdentityKeypair, entropy: EntropyPool): Pair<SessionState, X3dhInitialPayload>
@@ -882,8 +882,8 @@ interface VaultCryptoEngine {
     fun deriveStorageKey(passphrase: CharArray, salt: ByteArray): ByteArray
 }
 
-// Phase 1:  KotlinVaultCryptoEngine : VaultCryptoEngine
-// Phase 2:  RustVaultCryptoEngine   : VaultCryptoEngine  (via UniFFI)
+// Phase 1:  KotlinVaultCryptographyEngine : IVaultCryptographyEngine
+// Phase 2:  RustVaultCryptographyEngine   : IVaultCryptographyEngine  (via UniFFI)
 ```
 
 Swapping Phase 1 to Phase 2 is one line in the Koin dependency injection module. Nothing else changes.
@@ -894,9 +894,9 @@ Swapping Phase 1 to Phase 2 is one line in the Koin dependency injection module.
 
 The following Claude Code skills are required and will be developed:
 
-- **Naming Skill** — governs naming of packages, modules, classes, functions, variables, and all identifiers across both applications
+- ~~**Naming Skill**~~ — delivered as `/mc-naming`
 - **Common Sense Skill** — governs how CC thinks before acting. Prevents over-engineering, unnecessary dependencies, and silent compliance
-- **Technical Writing Skill** — governs documentation style. Pure factual, no filler, all killer, unambiguous
+- ~~**Technical Writing Skill**~~ — delivered as `/mc-writing`
 
 ---
 
@@ -910,7 +910,7 @@ The following Claude Code skills are required and will be developed:
 
 ## Active — Required Before Production
 
-- **Air gap surveillance specification** — what Alice monitors, monitoring frequency, violation response behaviour, suppression detection
+- ~~**Air gap surveillance specification**~~ — resolved. Spec approved at `docs/superpowers/specs/2026-03-30-air-gap-surveillance-design.md`
 - **QR visual differentiation** — each type has a distinct visual identity so users know what they are scanning before they scan it
 - **Custom keyboard visual design** — working implementation exists. Architecture and security properties are complete. Look and feel does not meet the UI standard. Full visual design required before shipping.
 - **Vocabulary review** — full naming audit applied across the entire document when the Naming Skill is complete
