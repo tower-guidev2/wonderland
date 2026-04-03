@@ -77,6 +77,7 @@ From `docs/design.md` Section 9:
 @docs/rules/zkp.md
 @docs/rules/workflow.md
 @docs/rules/review.md
+@docs/rules/static-analysis.md
 
 ---
 
