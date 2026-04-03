@@ -78,6 +78,8 @@ From `docs/design.md` Section 9:
 @docs/rules/workflow.md
 @docs/rules/review.md
 @docs/rules/static-analysis.md
+@docs/rules/quality-gates.md
+@docs/rules/session-protocol.md
 
 ---
 
