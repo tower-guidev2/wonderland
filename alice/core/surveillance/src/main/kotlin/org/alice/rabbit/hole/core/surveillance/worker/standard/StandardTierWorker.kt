@@ -11,7 +11,7 @@ class StandardTierWorker(
     workerParameters: WorkerParameters,
     private val networkStateProvider: INetworkStateProvider,
     private val violationHandler: IViolationHandler,
-) : BaseWorker(context, workerParameters) {
+) : BaseWorker(appContext, workerParameters) {
 
     override suspend fun doActualWork(): Result {
         val violations = StandardTierChecks.execute(networkStateProvider)

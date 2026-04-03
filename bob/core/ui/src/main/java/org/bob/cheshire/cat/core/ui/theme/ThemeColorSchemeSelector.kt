@@ -11,7 +11,6 @@ internal fun selectColorScheme(
     contrast: ThemeContrast,
     dynamicColorScheme: @Composable () -> ColorScheme
 ): ColorScheme {
-
     if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         return dynamicColorScheme()
     }

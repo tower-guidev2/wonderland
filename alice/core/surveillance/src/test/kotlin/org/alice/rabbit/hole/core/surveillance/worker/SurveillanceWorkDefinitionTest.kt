@@ -1,8 +1,8 @@
 package org.alice.rabbit.hole.core.surveillance.worker
 
+import androidx.work.ExistingPeriodicWorkPolicy
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import androidx.work.ExistingPeriodicWorkPolicy
 import org.alice.rabbit.hole.core.surveillance.worker.fast.FastTierDefinition
 import org.alice.rabbit.hole.core.surveillance.worker.slow.SlowTierDefinition
 import org.alice.rabbit.hole.core.surveillance.worker.standard.StandardTierDefinition

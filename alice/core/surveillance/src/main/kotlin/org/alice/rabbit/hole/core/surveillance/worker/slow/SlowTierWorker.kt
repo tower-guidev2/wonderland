@@ -12,7 +12,7 @@ class SlowTierWorker(
     workerParameters: WorkerParameters,
     private val buildPropertyProvider: IBuildPropertyProvider,
     private val violationHandler: IViolationHandler,
-) : BaseWorker(context, workerParameters) {
+) : BaseWorker(appContext, workerParameters) {
 
     override suspend fun doActualWork(): Result {
         val buildViolation = DeviceIntegrityVerifier.verifyBuildProperties(buildPropertyProvider)

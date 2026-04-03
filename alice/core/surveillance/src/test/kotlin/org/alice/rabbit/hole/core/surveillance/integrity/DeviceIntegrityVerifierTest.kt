@@ -29,8 +29,14 @@ class DeviceIntegrityVerifierTest {
 
     @Test
     fun unknownDeviceCodenameProducesViolation() {
-        val provider = FakeBuildPropertyProvider(manufacturer = "Google", brand = "google", device = "unknown_device", sdkVersion = 34)
-        assertThat(DeviceIntegrityVerifier.verifyBuildProperties(provider)).isEqualTo(AirGapViolation.DeviceIntegrityFailed(reason = "device codename unknown_device is not a known Pixel"))
+        val provider = FakeBuildPropertyProvider(
+            manufacturer = "Google",
+            brand = "google",
+            device = "unknown_device",
+            sdkVersion = 34,
+        )
+        val expected = AirGapViolation.DeviceIntegrityFailed(reason = "device codename unknown_device is not a known Pixel")
+        assertThat(DeviceIntegrityVerifier.verifyBuildProperties(provider)).isEqualTo(expected)
     }
 
     @Test

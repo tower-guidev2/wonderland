@@ -13,7 +13,7 @@ class FastTierWorker(
     private val settingsProvider: ISettingsProvider,
     private val adapterStateProvider: IAdapterStateProvider,
     private val violationHandler: IViolationHandler,
-) : BaseWorker(context, workerParameters) {
+) : BaseWorker(appContext, workerParameters) {
 
     override suspend fun doActualWork(): Result {
         val violations = FastTierChecks.execute(settingsProvider, adapterStateProvider)

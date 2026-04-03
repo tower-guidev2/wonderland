@@ -21,25 +21,48 @@ object FastTierChecks {
     private const val SIM_STATE_ABSENT = 1
 
     fun execute(settingsProvider: ISettingsProvider, adapterStateProvider: IAdapterStateProvider): List<AirGapViolation> {
+        return checkSettings(settingsProvider) + checkAdapters(adapterStateProvider)
+    }
+
+    private fun checkSettings(settingsProvider: ISettingsProvider): List<AirGapViolation> {
+        val disabledMeansViolation = listOf(
+            SETTING_AIRPLANE_MODE to AirGapViolation.AirplaneModeDisabled,
+        )
+        val enabledMeansViolation = listOf(
+            SETTING_WIFI to AirGapViolation.WifiEnabled,
+            SETTING_BLUETOOTH to AirGapViolation.BluetoothEnabled,
+            SETTING_NFC to AirGapViolation.NfcEnabled,
+            SETTING_BLUETOOTH_LOW_ENERGY_SCAN to AirGapViolation.BluetoothBackgroundScanEnabled,
+            SETTING_ADB to AirGapViolation.AdbEnabled,
+            SETTING_ADB_WIRELESS to AirGapViolation.AdbWirelessEnabled,
+            SETTING_DEVELOPER_OPTIONS to AirGapViolation.DeveloperOptionsEnabled,
+        )
+
         val violations = mutableListOf<AirGapViolation>()
+        disabledMeansViolation.forEach { (setting, violation) ->
+            if (settingsProvider.readGlobalInt(setting) == SETTING_DISABLED) violations.add(violation)
+        }
+        enabledMeansViolation.forEach { (setting, violation) ->
+            if (settingsProvider.readGlobalInt(setting) == SETTING_ENABLED) violations.add(violation)
+        }
+        return violations
+    }
 
-        if (settingsProvider.readGlobalInt(SETTING_AIRPLANE_MODE) == SETTING_DISABLED) violations.add(AirGapViolation.AirplaneModeDisabled)
-        if (settingsProvider.readGlobalInt(SETTING_WIFI) == SETTING_ENABLED) violations.add(AirGapViolation.WifiEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_BLUETOOTH) == SETTING_ENABLED) violations.add(AirGapViolation.BluetoothEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_NFC) == SETTING_ENABLED) violations.add(AirGapViolation.NfcEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_BLUETOOTH_LOW_ENERGY_SCAN) == SETTING_ENABLED) violations.add(AirGapViolation.BluetoothBackgroundScanEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_ADB) == SETTING_ENABLED) violations.add(AirGapViolation.AdbEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_ADB_WIRELESS) == SETTING_ENABLED) violations.add(AirGapViolation.AdbWirelessEnabled)
-        if (settingsProvider.readGlobalInt(SETTING_DEVELOPER_OPTIONS) == SETTING_ENABLED) violations.add(AirGapViolation.DeveloperOptionsEnabled)
+    private fun checkAdapters(adapterStateProvider: IAdapterStateProvider): List<AirGapViolation> {
+        val adapterChecks = listOf(
+            adapterStateProvider::isBluetoothLowEnergyEnabled to AirGapViolation.BluetoothLowEnergyEnabled,
+            adapterStateProvider::isNfcEnabled to AirGapViolation.NfcEnabled,
+            adapterStateProvider::isWifiBackgroundScanEnabled to AirGapViolation.WifiBackgroundScanEnabled,
+            adapterStateProvider::isWifiAwareAvailable to AirGapViolation.WifiAwareEnabled,
+            adapterStateProvider::isLocationEnabled to AirGapViolation.LocationEnabled,
+            adapterStateProvider::isAccessibilityEnabled to AirGapViolation.AccessibilityServiceActive,
+        )
 
-        if (adapterStateProvider.isBluetoothLowEnergyEnabled()) violations.add(AirGapViolation.BluetoothLowEnergyEnabled)
-        if (adapterStateProvider.isNfcEnabled()) violations.add(AirGapViolation.NfcEnabled)
-        if (adapterStateProvider.isWifiBackgroundScanEnabled()) violations.add(AirGapViolation.WifiBackgroundScanEnabled)
-        if (adapterStateProvider.isWifiAwareAvailable()) violations.add(AirGapViolation.WifiAwareEnabled)
-        if (adapterStateProvider.isLocationEnabled()) violations.add(AirGapViolation.LocationEnabled)
-        if (adapterStateProvider.isAccessibilityEnabled()) violations.add(AirGapViolation.AccessibilityServiceActive)
+        val violations = mutableListOf<AirGapViolation>()
+        adapterChecks.forEach { (check, violation) ->
+            if (check()) violations.add(violation)
+        }
         if ((adapterStateProvider.simState() == SIM_STATE_ABSENT).not()) violations.add(AirGapViolation.SimPresent)
-
         return violations
     }
 }

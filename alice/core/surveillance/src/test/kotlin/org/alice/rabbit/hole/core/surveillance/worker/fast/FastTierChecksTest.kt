@@ -87,8 +87,10 @@ class FastTierChecksTest {
 
     @Test
     fun multipleViolationsReturnedTogether() {
-        val settings = FakeSettingsProvider(secureSettings + (FastTierChecks.SETTING_AIRPLANE_MODE to FastTierChecks.SETTING_DISABLED) + (FastTierChecks.SETTING_WIFI to FastTierChecks.SETTING_ENABLED))
-        val violations = FastTierChecks.execute(settings, FakeAdapterStateProvider())
+        val overrides = secureSettings +
+            (FastTierChecks.SETTING_AIRPLANE_MODE to FastTierChecks.SETTING_DISABLED) +
+            (FastTierChecks.SETTING_WIFI to FastTierChecks.SETTING_ENABLED)
+        val violations = FastTierChecks.execute(FakeSettingsProvider(overrides), FakeAdapterStateProvider())
         assertThat(violations).contains(AirGapViolation.AirplaneModeDisabled)
         assertThat(violations).contains(AirGapViolation.WifiEnabled)
     }

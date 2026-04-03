@@ -27,6 +27,7 @@ class NetworkStateProvider(private val context: Context) : INetworkStateProvider
 
     override fun hasTetheredInterfaces(): Boolean {
         val intent = context.registerReceiver(null, android.content.IntentFilter("android.net.conn.TETHER_STATE_CHANGED"))
+
         @Suppress("DEPRECATION")
         val tetherArray = intent?.getStringArrayExtra("tetherArray")
         return tetherArray != null && tetherArray.isNotEmpty()
