@@ -16,9 +16,7 @@ import org.alice.poc.airgap.viewmodel.AirGapViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val bluetoothPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission(),
-    ) { isGranted ->
+    private val bluetoothPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         viewModelInstance?.updateBluetoothPermission(isGranted)
     }
 
@@ -45,10 +43,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun requestBluetoothPermissionIfNeeded() {
-        val isGranted = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.BLUETOOTH_CONNECT,
-        ) == PackageManager.PERMISSION_GRANTED
+        val isGranted = ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
 
         if (isGranted)
             viewModelInstance?.updateBluetoothPermission(true)

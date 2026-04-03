@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 
 private val AliceLightScheme = lightColorScheme(
     primary = primaryLight,
@@ -82,6 +85,13 @@ private val AliceDarkScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
+val LocalAirGapStatusColors = staticCompositionLocalOf { LightAirGapStatusColors }
+
+val MaterialTheme.airGapStatusColors: AirGapStatusColors
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalAirGapStatusColors.current
+
 @Composable
 fun AirGapTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -92,9 +102,16 @@ fun AirGapTheme(
     else
         AliceLightScheme
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AliceTypography,
-        content = content,
-    )
+    val statusColors = if (isDarkTheme)
+        DarkAirGapStatusColors
+    else
+        LightAirGapStatusColors
+
+    CompositionLocalProvider(LocalAirGapStatusColors provides statusColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AliceTypography,
+            content = content,
+        )
+    }
 }

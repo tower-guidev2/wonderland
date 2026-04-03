@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import org.alice.poc.airgap.composables.modifier.semanticsSealed
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import arrow.core.Either
-import org.alice.poc.airgap.composables.theme.AirGapColors
+import org.alice.poc.airgap.composables.theme.AirGapStatusColors
 import org.alice.poc.airgap.composables.theme.AirGapTheme
+import org.alice.poc.airgap.composables.theme.airGapStatusColors
 import org.alice.poc.airgap.domain.CheckResult
 import org.alice.poc.airgap.domain.SafeDetail
 import org.alice.poc.airgap.domain.SurfaceName
@@ -40,14 +41,16 @@ internal fun SurfaceListItem(
     checkResult: CheckResult,
     modifier: Modifier = Modifier,
 ) {
-    val indicatorColor = resolveIndicatorColor(checkResult)
+    val statusColors = MaterialTheme.airGapStatusColors
+    val indicatorColor = resolveIndicatorColor(checkResult, statusColors)
     val backgroundColor = if (checkResult.isViolating)
-        AirGapColors.ViolationBackground
+        statusColors.violationBackground
     else
-        AirGapColors.SafeBackground
+        statusColors.safeBackground
 
     Row(
         modifier = modifier
+            .semanticsSealed()
             .fillMaxWidth()
             .background(backgroundColor)
             .padding(ITEM_PADDING),
@@ -56,12 +59,13 @@ internal fun SurfaceListItem(
     ) {
         Box(
             modifier = Modifier
+                .semanticsSealed()
                 .size(INDICATOR_SIZE)
                 .clip(CircleShape)
                 .background(indicatorColor),
         )
 
-        Column(modifier = Modifier.weight(1.0F)) {
+        Column(modifier = Modifier.semanticsSealed().weight(1.0F)) {
             Text(
                 text = checkResult.surface.displayLabel,
                 style = MaterialTheme.typography.bodyLarge,
@@ -81,15 +85,17 @@ internal fun SurfaceListItem(
 
 @Composable
 private fun SeverityBadge(severity: ViolationSeverity) {
+    val statusColors = MaterialTheme.airGapStatusColors
     val badgeColor = when (severity) {
-        ViolationSeverity.HARD -> AirGapColors.HardViolation
-        ViolationSeverity.SOFT -> AirGapColors.SoftViolation
+        ViolationSeverity.HARD -> statusColors.hardViolation
+        ViolationSeverity.SOFT -> statusColors.softViolation
     }
     Text(
         text = severity.name,
-        color = Color.White,
+        color = statusColors.onError,
         style = MaterialTheme.typography.labelSmall,
         modifier = Modifier
+            .semanticsSealed()
             .background(
                 color = badgeColor,
                 shape = RoundedCornerShape(BADGE_CORNER_RADIUS),
@@ -101,13 +107,13 @@ private fun SeverityBadge(severity: ViolationSeverity) {
     )
 }
 
-private fun resolveIndicatorColor(checkResult: CheckResult): Color =
+private fun resolveIndicatorColor(checkResult: CheckResult, statusColors: AirGapStatusColors) =
     if (checkResult.isViolating.not())
-        AirGapColors.Safe
+        statusColors.safe
     else
         when (checkResult.surface.severity) {
-            ViolationSeverity.HARD -> AirGapColors.HardViolation
-            ViolationSeverity.SOFT -> AirGapColors.SoftViolation
+            ViolationSeverity.HARD -> statusColors.hardViolation
+            ViolationSeverity.SOFT -> statusColors.softViolation
         }
 
 @Preview(name = "Safe — Light", showBackground = true, device = "id:pixel_6")

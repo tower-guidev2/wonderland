@@ -21,3 +21,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "poc-0000-airgap"
+
+include(":lint-checks")

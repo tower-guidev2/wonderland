@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,10 +15,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.PrimaryScrollableTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -24,12 +25,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import org.alice.poc.airgap.composables.modifier.semanticsSealed
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import arrow.core.Either
 import kotlinx.coroutines.launch
-import org.alice.poc.airgap.composables.theme.AirGapColors
 import org.alice.poc.airgap.composables.theme.AirGapTheme
+import org.alice.poc.airgap.composables.theme.airGapStatusColors
 import org.alice.poc.airgap.domain.AirGapScreenState
 import org.alice.poc.airgap.domain.CheckResult
 import org.alice.poc.airgap.domain.SafeDetail
@@ -38,7 +40,8 @@ import org.alice.poc.airgap.domain.ValidatorGroup
 import org.alice.poc.airgap.domain.ViolationDetail
 
 private val ERROR_BANNER_PADDING = 16.dp
-private val DIVIDER_THICKNESS = 0.5.dp
+private val ITEM_SPACING = 4.dp
+private val TAB_ROW_EDGE_PADDING = 0.dp
 
 private val TAB_ORDER = listOf(
     ValidatorGroup.AIR_GAP,
@@ -56,18 +59,21 @@ internal fun AirGapScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { TAB_ORDER.size })
     val coroutineScope = rememberCoroutineScope()
+    val statusColors = MaterialTheme.airGapStatusColors
 
     Scaffold(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .semanticsSealed()
+            .fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = { Text("Air-Gap Verification") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = if (state.hasViolation)
-                        AirGapColors.HardViolation
+                        statusColors.hardViolation
                     else
-                        AirGapColors.Safe,
-                    titleContentColor = AirGapColors.ErrorText,
+                        statusColors.safe,
+                    titleContentColor = statusColors.onError,
                 ),
             )
         },
@@ -79,6 +85,7 @@ internal fun AirGapScreen(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .semanticsSealed()
                 .fillMaxSize()
                 .padding(innerPadding),
         ) {
@@ -86,7 +93,7 @@ internal fun AirGapScreen(
                 ErrorBanner(message = state.errorMessage)
             }
 
-            PrimaryScrollableTabRow(selectedTabIndex = pagerState.currentPage, edgePadding = 0.dp) {
+            PrimaryScrollableTabRow(selectedTabIndex = pagerState.currentPage, edgePadding = TAB_ROW_EDGE_PADDING) {
                 TAB_ORDER.forEachIndexed { index, group ->
                     val violationCount = state.violationCountForGroup(group)
                     val label = if (violationCount > 0)
@@ -103,20 +110,20 @@ internal fun AirGapScreen(
 
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.semanticsSealed().fillMaxSize(),
             ) { page ->
                 val group = TAB_ORDER[page]
                 val results = state.resultsForGroup(group)
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = 0.dp),
+                    modifier = Modifier.semanticsSealed().fillMaxSize(),
+                    contentPadding = PaddingValues(vertical = ITEM_SPACING),
                 ) {
                     items(
                         items = results,
                         key = { it.surface.name },
                     ) { checkResult ->
                         SurfaceListItem(checkResult = checkResult)
-                        HorizontalDivider(thickness = DIVIDER_THICKNESS)
+                        Spacer(modifier = Modifier.semanticsSealed().height(ITEM_SPACING))
                     }
                 }
             }
@@ -126,15 +133,17 @@ internal fun AirGapScreen(
 
 @Composable
 private fun ErrorBanner(message: String) {
+    val statusColors = MaterialTheme.airGapStatusColors
     Box(
         modifier = Modifier
+            .semanticsSealed()
             .fillMaxWidth()
-            .background(AirGapColors.ErrorBackground)
+            .background(statusColors.errorBackground)
             .padding(ERROR_BANNER_PADDING),
     ) {
         Text(
             text = message,
-            color = AirGapColors.ErrorText,
+            color = statusColors.onError,
             style = MaterialTheme.typography.bodyMedium,
         )
     }
@@ -191,7 +200,7 @@ private fun PreviewAirGapScreenErrorLight() {
         AirGapScreen(
             state = AirGapScreenState(
                 checkResults = createPreviewResults(),
-                errorMessage = "Check failed: SecurityException — BLUETOOTH_CONNECT permission denied",
+                errorMessage = "Bluetooth permission denied. Grant permission in Settings to monitor Bluetooth state.",
                 isBluetoothPermissionGranted = false,
             ),
             onRefreshRequested = {},
@@ -206,7 +215,7 @@ private fun PreviewAirGapScreenErrorDark() {
         AirGapScreen(
             state = AirGapScreenState(
                 checkResults = createPreviewResults(),
-                errorMessage = "Check failed: SecurityException — BLUETOOTH_CONNECT permission denied",
+                errorMessage = "Bluetooth permission denied. Grant permission in Settings to monitor Bluetooth state.",
                 isBluetoothPermissionGranted = false,
             ),
             onRefreshRequested = {},

@@ -16,6 +16,9 @@ koin                    = "4.2.0"
 
 arrowCore               = "2.2.2.1"
 
+lint                    = "32.1.0"
+junit                   = "4.13.2"
+
 [libraries]
 androidx-core-ktx                   = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx      = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -37,6 +40,13 @@ koin-core                           = { module = "io.insert-koin:koin-core", ver
 
 arrow-core                          = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
 
+lint-api                            = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
+lint-checks                         = { module = "com.android.tools.lint:lint-checks", version.ref = "lint" }
+lint-tests                          = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
+junit                               = { module = "junit:junit", version.ref = "junit" }
+
 [plugins]
 android-application         = { id = "com.android.application", version.ref = "agp" }
+android-lint                = { id = "com.android.lint", version.ref = "agp" }
+kotlin-jvm                  = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose              = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

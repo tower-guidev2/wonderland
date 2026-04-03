@@ -74,12 +74,32 @@ val surfaceContainerDark = Color(0xFF251D21)
 val surfaceContainerHighDark = Color(0xFF30282B)
 val surfaceContainerHighestDark = Color(0xFF3B3236)
 
-object AirGapColors {
-    val Safe = Color(0xFF2E7D32)
-    val HardViolation = Color(0xFFC62828)
-    val SoftViolation = Color(0xFFF57F17)
-    val ErrorBackground = Color(0xFFB71C1C)
-    val ErrorText = Color(0xFFFFFFFF)
-    val SafeBackground = Color(0xFFE8F5E9)
-    val ViolationBackground = Color(0xFFFFEBEE)
-}
+data class AirGapStatusColors(
+    val safe: Color,
+    val hardViolation: Color,
+    val softViolation: Color,
+    val errorBackground: Color,
+    val onError: Color,
+    val safeBackground: Color,
+    val violationBackground: Color,
+)
+
+val LightAirGapStatusColors = AirGapStatusColors(
+    safe = Color(0xFF2E7D32),
+    hardViolation = Color(0xFFC62828),
+    softViolation = Color(0xFFF57F17),
+    errorBackground = Color(0xFFB71C1C),
+    onError = Color(0xFFFFFFFF),
+    safeBackground = Color(0xFFE8F5E9),
+    violationBackground = Color(0xFFFFEBEE),
+)
+
+val DarkAirGapStatusColors = AirGapStatusColors(
+    safe = Color(0xFF66BB6A),
+    hardViolation = Color(0xFFEF5350),
+    softViolation = Color(0xFFFFCA28),
+    errorBackground = Color(0xFFD32F2F),
+    onError = Color(0xFFFFFFFF),
+    safeBackground = Color(0xFF1B5E20),
+    violationBackground = Color(0xFF2C1212),
+)
