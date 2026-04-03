@@ -66,5 +66,9 @@ gradlePlugin {
             id = libs.plugins.wonderland.jvm.library.get().pluginId
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("detekt") {
+            id = libs.plugins.wonderland.detekt.get().pluginId
+            implementationClass = "DetektConventionPlugin"
+        }
     }
 }
