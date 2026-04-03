@@ -41,6 +41,29 @@ Phase 1b fallback: ViewModel-based MVI with `StateFlow` + `dispatch()`. Switch i
 
 ---
 
+## Data Flow: Message Send
+
+User composes → Presenter creates Intent → UseCase: encrypt(plaintext, recipientOneTimeKey) → Ephemeral DH (not persisted) → ChaCha20-Poly1305 → CBOR → QR1 (encrypted) + QR2 (blockchain auth) → UI displays both
+
+---
+
+## Data Flow: Engagement Ceremony
+
+Bob creates Invitation → QR → Alice scans → validates → generates Key Bundle → QR → Bob scans → Contact Record on both devices. Trust on first use — no CA, no server.
+
+---
+
+## Security Architecture
+
+- All cryptographic operations in `:core:cryptography` module.
+- No raw bytes cross module boundaries — value classes only.
+- Ephemeral DH keys created per message, zeroed after use.
+- Private keys never written to Room or any persistent store.
+- Alice: StrongBox attestation validates device integrity every 30 seconds.
+- Alice: hard violations trigger immediate cryptographic zeroing.
+
+---
+
 ## Phase 1 vs Phase 2
 
 - **Phase 1** — pure Kotlin PoC. Proves protocol, UX, and pipeline end-to-end. Uses `VaultCryptographyEngine`. Distributes via GitHub Releases APK.

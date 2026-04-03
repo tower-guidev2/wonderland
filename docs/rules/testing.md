@@ -27,7 +27,7 @@ Follow in order. Never skip levels.
 ## Test Data
 
 - All test data from `:core:testfixtures` — no inline data in test classes
-- `kotlin-faker 1.16.1` for dynamic data — always seeded, always in testfixtures
+- `kotlin-faker` (version from libs.versions.toml) for dynamic data — always seeded, always in testfixtures
 - testfixtures categories:
   - **canonical** — fixed spec vectors (immutable, referenced by name)
   - **dynamic** — faker builders (seeded, reproducible)
@@ -39,6 +39,36 @@ Follow in order. Never skip levels.
 - **Coverage target:** 90%+ on `core:cryptography` and `core:protocol`
 - **Spec vectors first:** every crypto function is tested against official specification test vectors before any other test is written
 - Broadcast intent-to-violation mapping is a pure function — tested exhaustively with pure unit tests (every action string, every state value, every null/unknown case)
+
+---
+
+## Coverage Expectations
+
+- `:core:cryptography` module: 100% line coverage — no exceptions
+- `:core:protocol` serialisation: 100% line coverage
+- Use cases: 100% branch coverage (every Either path)
+- Presenters: every state transition covered
+- UI: every screen archetype has at least one state test
+- Overall: 80% minimum — coverage is a trailing indicator, test quality matters more
+
+---
+
+## Security Tests
+
+- Key material zeroed after use (verify byte arrays cleared)
+- No key material in logs at any level
+- Hard violations trigger cryptographic zeroing (Alice only)
+- StrongBox rejects invalid device state (Alice only)
+- Malformed payloads → `Either.Left`, never crash
+
+---
+
+## What Does NOT Get Tested
+
+- Android framework internals (`Context`, `Activity`, etc.)
+- Koin wiring (validated at app startup)
+- Third-party library internals (ML Kit, Bouncy Castle)
+- Private functions — test through public callers
 
 ---
 

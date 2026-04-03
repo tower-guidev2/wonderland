@@ -4,30 +4,45 @@
 
 ## Compose Semantics — Complete Prohibition
 
-Every `@Composable` in Alice that emits UI must apply `clearAndSetSemantics {}` as the **first** modifier in its chain.
+**Applies to: Alice, Bob, and all POCs.**
+
+Every `Modifier` chain in every `@Composable` must begin with `.semanticsSealed()` — no exceptions. This applies to every composable that receives or constructs a `Modifier`, including inner layout elements (`Column`, `Box`, `Spacer`, etc.).
 
 ```kotlin
 // Correct
-modifier = modifier.clearAndSetSemantics { }
+modifier = modifier.semanticsSealed().fillMaxSize()
+modifier = Modifier.semanticsSealed().fillMaxWidth().padding(ITEM_PADDING)
 
-// Wrong — missing suppression
+// Wrong — missing semanticsSealed
 modifier = modifier
+modifier = Modifier.fillMaxSize()
 
-// Wrong — wrong position
-modifier = modifier.padding(16.dp).clearAndSetSemantics { }
+// Wrong — not first
+modifier = modifier.padding(16.dp).semanticsSealed()
 ```
 
-Never add to any Alice composable:
+The `semanticsSealed()` extension wraps `clearAndSetSemantics {}`. It lives in a `modifier` package within the composables directory. Every project must include it.
+
+Never add to any composable:
 - `Modifier.semantics {}`
 - `Modifier.testTag()`
 - `contentDescription` parameters
 - `isTraversalGroup`, `heading`, `role`, or any semantics property
 
-A lint rule in build-logic must fail the Alice build if any composable applies a `Modifier` without `clearAndSetSemantics` first.
+**Why this rule exists:** Accessibility services (TalkBack, Switch Access, third-party screen readers) can read all semantic nodes in real time. On an air-gapped security device, this is a data exfiltration vector — a malicious or compromised accessibility service could silently scrape screen content including cryptographic ceremony state, contact identities, and verification phrases. This is a deliberate security trade-off, not an accessibility oversight.
 
-An instrumented test must traverse the full unmerged semantics tree of every Alice screen and assert every node's `SemanticsConfiguration` is empty. Runs on every CI build — failing after a Compose BOM update is a blocker.
+**UI testing consequence:** With all semantics cleared, `ComposeTestRule` finders return nothing by design. UI is verified at the presenter/state layer only. Visual correctness is validated via screenshot tests and manual review on the target GrapheneOS device.
 
-`ComposeTestRule` finders return nothing by design on Alice. Alice UI behaviour is verified at presenter and state layer only.
+### SemanticsNotSealed Lint Rule — Mandatory
+
+Every POC and application (Alice and Bob) must include a `:lint-checks` module containing the `SemanticsNotSealedDetector`. This lint rule:
+- Severity: **ERROR** (build-breaking)
+- Scans every `Modifier` chain and verifies the first chained call is `semanticsSealed()` or `clearAndSetSemantics()`
+- Wired via `lintChecks(project(":lint-checks"))` in every module containing Compose UI
+
+Reference implementation: `wonderland/poc/0000_alice_broadcast_receiver/lint-checks/`
+
+An instrumented test must traverse the full unmerged semantics tree of every screen and assert every node's `SemanticsConfiguration` is empty. Runs on every CI build — failing after a Compose BOM update is a blocker.
 
 ---
 
@@ -76,6 +91,10 @@ Never written to any persistent storage of any kind — including `SharedPrefere
 
 Keys live only in local variables or function parameters for the duration of a single operation.
 
+- Zero after use: `bytes.fill(0)` in `finally` blocks — mandatory even on failure paths.
+- No `toString()` overrides on crypto value classes — prevent accidental logging.
+- Room: no tables store private keys, session keys, or ephemeral keys. Ever.
+
 ---
 
 ## Production Build Only
@@ -93,47 +112,7 @@ Never: `play-services-mlkit-barcode-scanning`
 
 ## Air-Gap Surveillance System
 
-Full spec: `docs/superpowers/specs/2026-03-30-air-gap-surveillance-design.md`. This section is a summary — the spec is authoritative.
-
-Alice implements continuous multi-channel air-gap surveillance. Mental model: inverse of a connectivity listener — Alice reacts to connectivity *gain* or radio *activation*, not loss.
-
-### Module Structure
-
-- `alice:core:surveillance_api` — pure Kotlin domain types, zero Android imports
-- `alice:core:surveillance` — Android implementation. Feature modules depend on `surveillance_api` only.
-
-### Domain Interface
-
-```kotlin
-interface IAirGapSurveillance {
-    val status: StateFlow<AirGapStatus>
-    val violations: Flow<AirGapViolation>
-}
-
-sealed interface AirGapStatus {
-    data object Secure : AirGapStatus
-    data class Compromised(val violation: AirGapViolation) : AirGapStatus
-}
-```
-
-Purely observational. No `start()` / `stop()`. Lifecycle is structural — always on from app process creation. Workers enqueued via App Startup. BroadcastReceiver and NetworkCallback live in callbackFlows scoped to the application CoroutineScope.
-
-23 violation types in a sealed class with HARD/SOFT severity. Covers: radio surfaces (airplane mode, Bluetooth, BLE, NFC, SIM, Wi-Fi, Wi-Fi Direct, Wi-Fi Aware), network surfaces (active interface, VPN, tethering), background scans (Wi-Fi, BLE), location, device security (developer options, ADB, wireless ADB, accessibility services, display mirroring, OEM unlock), device integrity (build properties, StrongBox attestation), and USB power (soft).
-
-### Architecture — Two Layers
-
-**Reactive layer** (instant detection): Single consolidated BroadcastReceiver with compound `IntentFilter` covering all radio and device state broadcasts. Two `ConnectivityManager.NetworkCallback` instances — one for all networks, one VPN-specific.
-
-**Periodic layer** (WorkManager): Three `PeriodicWorkRequest` tiers:
-- FastTierWorker — 15 min, cheap Settings.Global reads
-- StandardTierWorker — 1 hour, network enumeration
-- SlowTierWorker — 6 hours, StrongBox hardware attestation
-
-No network constraint — Alice is air-gapped.
-
-**SIM monitoring:** Uses `"android.intent.action.SIM_STATE_CHANGED"` with `"ss"` string extra. `TelephonyManager.ACTION_SIM_CARD_STATE_CHANGED` is `@SystemApi` — not available to normal apps.
-
-**Tethering monitoring:** Uses `"android.net.conn.TETHER_STATE_CHANGED"`. `TetheringManager` is `@SystemApi`.
+Full spec: `docs/superpowers/specs/2026-03-30-air-gap-surveillance-design.md`. The spec is authoritative — do not duplicate here.
 
 ### Violation Response
 

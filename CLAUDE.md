@@ -75,6 +75,41 @@ From `docs/design.md` Section 9:
 @docs/rules/crypto-protocol.md
 @docs/rules/qr-protocol.md
 @docs/rules/zkp.md
+@docs/rules/workflow.md
+@docs/rules/review.md
+
+---
+
+## Control Documents
+
+Read these before starting feature work:
+
+| Document | Governs |
+|---|---|
+| `docs/prd.md` | Requirements and acceptance criteria |
+| `docs/decisions.md` | Settled architectural choices — do not relitigate |
+| `docs/api-contracts.md` | Cross-module interface definitions |
+| `docs/compose-ui.md` | Visual standard and Compose conventions |
+| `docs/ux-patterns.md` | Navigation, screen archetypes, interaction contracts |
+| `docs/patterns.md` | Reusable implementation templates |
+| `docs/release-checklist.md` | Pre-publish gate |
+| `docs/build-variants.md` | Flavour/build type matrix |
+
+---
+
+## Engineering Principles
+
+- Principles over rules — everything is challengeable with evidence.
+- Progressive detail — start broad, refine iteratively.
+- Five Year Old Test — if a design decision can't be explained simply, it's wrong.
+- All killer, no filler — pure factual, unambiguous communication.
+- UI standard is fine art: pixel-perfect, Rolls Royce quality, frictionless UX.
+
+---
+
+## Reviewer
+
+Frank is the final authority on all code review. CC performs self-review and scoring. Frank approves, revises, or rejects. See `review.md` rules.
 
 ---
 
@@ -84,4 +119,4 @@ After every session:
 - New rules, decisions, or patterns → written to the appropriate `docs/rules/*.md` file, never to root CLAUDE.md
 - Root CLAUDE.md is append-prohibited except for new `@import` lines
 - Module-specific session knowledge → nearest subdirectory CLAUDE.md
-- If no rules file exists for a topic, create one and add the `@import` here, DONT CHANGE ANYTHONG ELSE AT ALL!!!!!!!!!!!!!!
+- If no rules file exists for a topic, create one and add the `@import` here, DONT CHANGE ANYTHING ELSE AT ALL!!!!!!!!!!!!!!

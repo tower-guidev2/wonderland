@@ -2,13 +2,15 @@
 
 Full skill: `/mc-quality`. This file is a summary — the skill is authoritative.
 
+Naming rules: see `naming.md`. Testing rules: see `testing.md`.
+
 Foundation: Google Kotlin Style Guide + JetBrains Kotlin Conventions + Uncle Bob Clean Code, with project overrides winning every conflict.
 
 ---
 
 ## Hard Bans
 
-No `lateinit`. No `!!`. No `!` negation (use `.not()`). No `apply`. No `runCatching`. No companion objects. No comments or KDoc. No wildcard imports. No magic numbers/strings. No backtick function names. No abbreviations. No `@Deprecated`. No builder pattern. No `protected`. No abstract classes (unless framework-forced). No `var` on class properties. No mutable collection properties. No negative-logic names. No technology names in identifiers. No `runBlocking` in tests.
+No `lateinit`. No `!!`. No `!` negation (use `.not()`). No `apply`. No `runCatching`. No companion objects. No inline comments (KDoc on public APIs is mandatory — see Documentation section). No wildcard imports. No `@Deprecated`. No builder pattern. No `protected`. No abstract classes (unless framework-forced). No `var` on class properties. No mutable collection properties.
 
 ---
 
@@ -36,6 +38,24 @@ No `lateinit`. No `!!`. No `!` negation (use `.not()`). No `apply`. No `runCatch
 ## Formatting
 
 180-char lines. 4-space indent. K&R braces. Trailing commas everywhere. Single-line `if`/`else` on separate lines, no braces, properly indented. Positive case first. `.not()` not `!`. String templates always. Import to leaf level. Acronyms treated as words.
+
+---
+
+## Coroutines
+
+- ViewModels own `viewModelScope`. No other class launches on this scope.
+- `withContext(Dispatchers.IO)` for disk/crypto operations.
+- Never use `GlobalScope`.
+- `StateFlow` for state, `Channel` for one-shot effects.
+- Collect flows in `repeatOnLifecycle(STARTED)`.
+
+---
+
+## Documentation
+
+- KDoc on all public interfaces and non-obvious public functions.
+- No comments that restate what the code does — explain *why*, not *what*.
+- TODO format: `// TODO(owner): description — ticket/context`
 
 ---
 

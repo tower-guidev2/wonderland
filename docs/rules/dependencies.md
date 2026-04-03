@@ -32,6 +32,9 @@
 - CameraX, Navigation 3, Compose BOM (same as Alice)
 - Deep link delivery: SMS (`smsto:`), WhatsApp (`whatsapp://send`), Telegram (`tg://resolve`)
 
+### Deferred — Phase 2
+- `koin-annotations` + `koin-ksp-compiler` — Decided. Koin Annotations is the DI approach. Integration deferred to Phase 2 when modularisation requires it. See ADR-005 in docs/decisions.md.
+
 ### Deliberately excluded
 - No Retrofit / OkHttp in Alice — air-gapped
 - No Firebase / Analytics anywhere
