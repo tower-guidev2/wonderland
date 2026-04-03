@@ -55,6 +55,10 @@ mockk                   = "1.14.9"
 robolectric             = "4.16.1"
 kotlinxCoroutinesTest   = "1.10.2"
 
+# Static analysis
+detekt                  = "1.23.8"
+detektComposeRules      = "0.4.27"
+
 [libraries]
 # AndroidX
 androidx-core-ktx                   = { group = "androidx.core",          name = "core-ktx",                   version.ref = "coreKtx" }
@@ -137,6 +141,11 @@ kotlin-compose-gradlePlugin         = { module = "org.jetbrains.kotlin:compose-c
 ksp-gradlePlugin                    = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 room-gradlePlugin                   = { module = "androidx.room:room-gradle-plugin",                            version.ref = "room" }
 
+# Static analysis — detekt plugins
+detekt-gradlePlugin                 = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin",         version.ref = "detekt" }
+detekt-ktlint-wrapper               = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-compose-rules                = { module = "io.nlopez.compose.rules:detekt",                          version.ref = "detektComposeRules" }
+
 [plugins]
 android-application         = { id = "com.android.application",                         version.ref = "agp" }
 android-library             = { id = "com.android.library",                              version.ref = "agp" }
@@ -145,6 +154,7 @@ kotlin-compose              = { id = "org.jetbrains.kotlin.plugin.compose",     
 kotlin-jvm                  = { id = "org.jetbrains.kotlin.jvm",                        version.ref = "kotlin" }
 kotlin-serialization        = { id = "org.jetbrains.kotlin.plugin.serialization",       version.ref = "kotlin" }
 ksp                         = { id = "com.google.devtools.ksp",                          version.ref = "ksp" }
+detekt                      = { id = "io.gitlab.arturbosch.detekt",                  version.ref = "detekt" }
 
 # Convention plugins (no version — resolved via included build-logic, not from a repository)
 wonderland-android-application          = { id = "wonderland.android.application" }
@@ -153,4 +163,5 @@ wonderland-android-library              = { id = "wonderland.android.library" }
 wonderland-android-library-compose      = { id = "wonderland.android.library.compose" }
 wonderland-android-lint                 = { id = "wonderland.android.lint" }
 wonderland-android-room                 = { id = "wonderland.android.room" }
+wonderland-detekt                       = { id = "wonderland.detekt" }
 wonderland-jvm-library                  = { id = "wonderland.jvm.library" }
