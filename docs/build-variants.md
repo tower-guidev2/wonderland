@@ -40,7 +40,8 @@
 
 ### Alice
 - `CAMERA` (QR scanning only)
-- No `INTERNET`. No `ACCESS_NETWORK_STATE`. No `BLUETOOTH`. No network-related permissions whatsoever.
+- No `INTERNET`. No network-related permissions whatsoever.
+- **Surveillance exceptions** (permitted in `alice:core:surveillance` only, detection not access): `ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`, `BLUETOOTH_CONNECT`, `READ_BASIC_PHONE_STATE`. See `docs/rules/security.md`.
 
 ### Bob
 - `CAMERA` (QR scanning only)

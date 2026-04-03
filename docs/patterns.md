@@ -118,7 +118,7 @@ class EncryptMessageUseCase(
 ```kotlin
 // In :feature_engagement module
 @Module
-@ComponentScan("com.example.feature.engagement")
+@ComponentScan("org.alice.rabbit.hole.feature.engagement")
 class EngagementModule
 
 @Single
@@ -180,8 +180,8 @@ fun decodePayload(qrPayload: QrPayload): Either<SerializationError, QrMessagePay
 ```kotlin
 fun checkSurface(surface: AirGapSurface): AttestationResult {
     val isSecure = when (surface) {
-        AirGapSurface.WiFi -> !wifiManager.isWifiEnabled
-        AirGapSurface.Bluetooth -> !bluetoothAdapter.isEnabled
+        AirGapSurface.WiFi -> wifiManager.isWifiEnabled.not()
+        AirGapSurface.Bluetooth -> bluetoothAdapter.isEnabled.not()
         // ... all 20+ surfaces
     }
     return if (isSecure) {

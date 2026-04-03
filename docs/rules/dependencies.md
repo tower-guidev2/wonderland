@@ -22,7 +22,7 @@
 ### Alice
 - `androidx.room` — storage with BouncyCastle TypeConverters for column-level encryption at rest
 - `androidx.camera:camera-camera2/lifecycle/view` — CameraX
-- `androidx.navigation3:navigation3-runtime/ui:1.0.1` — Navigation 3 stable
+- `androidx.navigation3:navigation3-runtime/ui` — Navigation 3 stable
 - Jetpack Compose BOM
 - `com.google.mlkit:barcode-scanning` — bundled only. Never `play-services-mlkit-barcode-scanning`.
 - Custom `InputMethodService` keyboard — a-z, 0-9, space only. `FLAG_SECURE` set.

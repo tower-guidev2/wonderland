@@ -4,7 +4,7 @@
 
 ## Toolchain
 
-detekt 1.23.8 + ktlint wrapper + nlopez compose-rules. Android Lint for platform-specific checks.
+detekt (version in libs.versions.toml) + ktlint wrapper + nlopez compose-rules. Android Lint for platform-specific checks.
 
 ---
 

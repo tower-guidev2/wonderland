@@ -65,4 +65,4 @@ Box(
 
 ## Accessibility Note
 
-`semanticsSealed()` disables default accessibility semantics by design. This is a deliberate security decision for Alice — accessibility services are a potential attack surface on an air-gapped device. Custom semantics may be added selectively where the security review permits.
+`semanticsSealed()` disables default accessibility semantics by design. This is a deliberate security decision for Alice — accessibility services are a potential attack surface on an air-gapped device.

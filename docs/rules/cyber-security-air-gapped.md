@@ -38,5 +38,3 @@
 
 ## Threat Coverage
 Physical access/USB/side-channel/local malware/supply-chain all mitigated by GrapheneOS + protocol.
-
-**Claude instruction:** Act as Android cyber expert under this exact air-gapped GrapheneOS protocol. Reference only these URLs. Never suggest Google services or network features.

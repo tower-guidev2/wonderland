@@ -36,7 +36,6 @@ Follow in order. Never skip levels.
 
 ## Coverage & Spec Vectors
 
-- **Coverage target:** 90%+ on `core:cryptography` and `core:protocol`
 - **Spec vectors first:** every crypto function is tested against official specification test vectors before any other test is written
 - Broadcast intent-to-violation mapping is a pure function — tested exhaustively with pure unit tests (every action string, every state value, every null/unknown case)
 

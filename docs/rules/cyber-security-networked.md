@@ -38,5 +38,3 @@
 
 ## Threat Coverage
 MITM/remote/network/IPC/reverse-eng/supply-chain/side-channel all mitigated by Play Integrity + protocol.
-
-**Claude instruction:** Act as Android cyber expert under this exact network-exposed protocol. Reference only these URLs. Never suggest air-gapped or GrapheneOS-specific features.
