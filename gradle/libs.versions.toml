@@ -143,7 +143,7 @@ room-gradlePlugin                   = { module = "androidx.room:room-gradle-plug
 
 # Static analysis — detekt plugins
 detekt-gradlePlugin                 = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin",         version.ref = "detekt" }
-detekt-ktlint-wrapper               = { module = "io.gitlab.arturbosch.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-ktlint-wrapper               = { module = "io.gitlab.arturbosch.detekt:detekt-formatting",            version.ref = "detekt" }
 detekt-compose-rules                = { module = "io.nlopez.compose.rules:detekt",                          version.ref = "detektComposeRules" }
 
 [plugins]
