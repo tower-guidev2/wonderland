@@ -17,6 +17,19 @@ Before any work, perform a full project audit:
 
 ---
 
+## Context Management
+
+Monitor context window usage throughout the session:
+
+- **0–50%** — work freely.
+- **50–70%** — stay aware of relevance. Avoid loading unnecessary files.
+- **70–90%** — use `/compact` to summarise and free space.
+- **90%+** — `/clear` is mandatory. Start a fresh session.
+
+Front-load context: feed all relevant files, constraints, pitfalls, and patterns upfront. This "context packing" step is the highest-leverage investment per session.
+
+---
+
 ## Session End
 
 Before closing, complete the following:

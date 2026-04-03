@@ -80,6 +80,7 @@ From `docs/design.md` Section 9:
 @docs/rules/static-analysis.md
 @docs/rules/quality-gates.md
 @docs/rules/session-protocol.md
+@docs/rules/project-management.md
 
 ---
 
