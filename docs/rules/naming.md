@@ -17,6 +17,7 @@ Locked decisions. Do not revisit, suggest alternatives, or silently revert to an
 - **Matching pairs and word families** — names in a set must share vocabulary.
 - **No negative-logic names.** Name what something *is*, not what it isn't.
 - **Max ~30 chars** per identifier. Over 30 means the design is wrong, not the name.
+- **Vocabulary consistency.** When a design spec defines a glossary (e.g. "Action" not "Event"), all code, examples, comments, and identifiers must use the established terms. No synonyms.
 
 ---
 
