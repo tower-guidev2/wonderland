@@ -31,6 +31,7 @@ Namespace reserved: `AliceBob_v1_`
 |---|---|
 | X3DH | `AliceBob_v1_X3DH` |
 | Double Ratchet root | `AliceBob_v1_DR_RK` |
+| Per-message session key | `AliceBob_v1_MSG` |
 | MAC | `AliceBob_v1_MAC` |
 | SAS | `AliceBob_v1_SAS` |
 

@@ -65,6 +65,18 @@ This file is the tiebreaker when it's unclear which document governs a decision.
 
 ---
 
+## Design Spec Workflow
+
+Every new design spec must be cross-referenced against locked protocol rules before presenting for review:
+
+- `docs/rules/qr-protocol.md` — wire format, CBOR integer key convention, QR type registry
+- `docs/rules/crypto-protocol.md` — HKDF info string registry, primitive selection, key architecture
+- `docs/design.md` — field registries, settled decisions, type assignments
+
+Wire format, CBOR field keys, HKDF info strings, and QR type assignments must match locked decisions. Catch conflicts at spec time, not at review time.
+
+---
+
 ## Document Maintenance
 
 After completing any significant work:
